@@ -343,7 +343,7 @@
                         let currentStatus = metsGame.status.detailedState;
 
                         if (metsGame.status.codedGameState === "I") {
-                            // Remove "th" or other suffixes for inning
+                            // Display inning without ordinal suffix
                             currentStatus = `${metsGame.inningInfo?.inningHalf || ''} ${metsGame.inningInfo?.currentInning || ''}`;
                         } else if (metsGame.status.codedGameState === "P" || metsGame.status.codedGameState === "S") {
                             const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -602,20 +602,36 @@
 
                 // Helper to create and populate a single standings table
                 const createAndPopulateStandingsTable = (apiRecords, mockData, divisionName, divisionId) => {
-                    const divisionApiData = apiRecords ? apiRecords.records.find(record => record.division.id === divisionId)?.teamRecords : null;
+                    // Correctly access teamRecords from API response
+                    const divisionApiData = apiRecords && apiRecords.records ? apiRecords.records.find(record => record.division.id === divisionId)?.teamRecords : null;
                     let dataToDisplay = [];
 
                     if (divisionApiData && divisionApiData.length > 0) {
                         dataToDisplay = divisionApiData;
-                        // Add to allTeams for top 5 calculation
-                        allTeams = allTeams.concat(dataToDisplay);
                     } else {
                         dataToDisplay = mockData;
                     }
 
+                    // Add teams from this division to allTeams for overall top 5 calculation
+                    dataToDisplay.forEach(teamRecord => {
+                        const teamObj = {};
+                        if (teamRecord.team) { // API data structure
+                            teamObj.team = teamRecord.team;
+                            teamObj.wins = teamRecord.wins;
+                            teamObj.losses = teamRecord.losses;
+                            teamObj.winningPercentage = teamRecord.winningPercentage;
+                        } else { // Mock data structure
+                            teamObj.team = { name: teamRecord.team };
+                            teamObj.wins = teamRecord.W;
+                            teamObj.losses = teamRecord.L;
+                            teamObj.winningPercentage = teamRecord.PCT;
+                        }
+                        allTeams.push(teamObj);
+                    });
+
                     // Custom sort: Mets first, then by winning percentage, then alphabetically
                     dataToDisplay.sort((a, b) => {
-                        const teamA = a.team ? a.team.name : a.team;
+                        const teamA = a.team ? a.team.name : a.team; // Handle both API and mock structures
                         const teamB = b.team ? b.team.name : b.team;
 
                         if (teamA === "New York Mets" && teamB !== "New York Mets") return -1;
@@ -662,6 +678,7 @@
                     if (dataToDisplay && dataToDisplay.length > 0) {
                         dataToDisplay.forEach(teamRecord => {
                             const row = tableBody.insertRow();
+                            // Safely access properties for both API and mock data structures
                             const teamName = teamRecord.team ? (teamRecord.team.name || "Unknown Team") : (teamRecord.team || "Unknown Team");
                             const wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
                             const losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
@@ -692,27 +709,21 @@
                 };
                 
                 // --- National League Divisions ---
-                // NL East (ID: 203)
                 createAndPopulateStandingsTable(nlStandingsData, mockNLEastStandings, "NL East Standings", 203);
-                // NL Central (ID: 204)
                 createAndPopulateStandingsTable(nlStandingsData, mockNLCentralStandings, "NL Central Standings", 204);
-                // NL West (ID: 205)
                 createAndPopulateStandingsTable(nlStandingsData, mockNLWestStandings, "NL West Standings", 205);
 
 
                 // --- American League Divisions ---
-                // AL East (ID: 201)
                 createAndPopulateStandingsTable(alStandingsData, mockALEastStandings, "AL East Standings", 201);
-                // AL Central (ID: 202)
                 createAndPopulateStandingsTable(alStandingsData, mockALCentralStandings, "AL Central Standings", 202);
-                // AL West (ID: 200) - Note: MLB Stats API uses 200 for AL West
                 createAndPopulateStandingsTable(alStandingsData, mockALWestStandings, "AL West Standings", 200);
 
                 // Populate Top 5 Teams
                 const top5TeamsTableBody = document.getElementById('top-5-teams-table').querySelector('tbody');
                 top5TeamsTableBody.innerHTML = ''; // Clear existing rows
 
-                // Filter out teams with no winning percentage (e.g., from divisions with no games yet)
+                // Filter out teams with no winning percentage and sort for top 5
                 const teamsWithValidPct = allTeams.filter(team => team.winningPercentage !== undefined && team.winningPercentage !== null);
 
                 teamsWithValidPct.sort((a, b) => {
@@ -725,7 +736,7 @@
                     top5Teams.forEach((team, index) => {
                         const row = top5TeamsTableBody.insertRow();
                         row.insertCell().textContent = index + 1;
-                        row.insertCell().textContent = team.team ? (team.team.name || "Unknown Team") : "Unknown Team";
+                        row.insertCell().textContent = team.team.name || "Unknown Team";
                         row.insertCell().textContent = team.wins || '--';
                         row.insertCell().textContent = team.losses || '--';
                         row.insertCell().textContent = team.winningPercentage !== undefined ? parseFloat(team.winningPercentage).toFixed(3) : '--';
