@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New York Mets Fan Hub</title>
     <!-- Tailwind CSS CDN -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -61,7 +61,6 @@
             font-size: 2.25rem; /* text-4xl */
             font-weight: 800; /* font-extrabold */
             padding: 2rem;
-            /* Removed gradient, now solid background */
             background-color: #002D72; /* Solid Mets Blue */ 
             color: white;
             border-radius: 0.75rem;
@@ -82,7 +81,6 @@
             text-align: center;
             color: #e0e0e0;
         }
-        /* Removed .team-info as pitcher text is removed */
         .series-navigation button, .load-more-btn {
             background-color: #002D72;
             color: white;
@@ -211,7 +209,7 @@
             let displayedPastGamesCount = 0;
             const GAMES_PER_LOAD = 5;
 
-            // Mock Data for Fallback 
+            // Mock Data for Fallback - Ensuring all divisions have mock data
             const mockUpcomingGames = [
                 { date: "Sun, Jun 15, 2025", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
                 { date: "Tue, Jun 17, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
@@ -343,8 +341,12 @@
                         let currentStatus = metsGame.status.detailedState;
 
                         if (metsGame.status.codedGameState === "I") {
-                            // Display inning without ordinal suffix
-                            currentStatus = `${metsGame.inningInfo?.inningHalf || ''} ${metsGame.inningInfo?.currentInning || ''}`;
+                            // Display inning without ordinal suffix, if available
+                            if (metsGame.inningInfo?.currentInning) {
+                                currentStatus = `${metsGame.inningInfo.inningHalf || ''} ${metsGame.inningInfo.currentInning}`;
+                            } else {
+                                currentStatus = "In Progress"; // Fallback if inning number isn't there
+                            }
                         } else if (metsGame.status.codedGameState === "P" || metsGame.status.codedGameState === "S") {
                             const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                             currentStatus = `Scheduled: ${gameTime}`;
@@ -615,24 +617,24 @@
                     // Add teams from this division to allTeams for overall top 5 calculation
                     dataToDisplay.forEach(teamRecord => {
                         const teamObj = {};
-                        if (teamRecord.team) { // API data structure
-                            teamObj.team = teamRecord.team;
-                            teamObj.wins = teamRecord.wins;
-                            teamObj.losses = teamRecord.losses;
-                            teamObj.winningPercentage = teamRecord.winningPercentage;
-                        } else { // Mock data structure
-                            teamObj.team = { name: teamRecord.team };
-                            teamObj.wins = teamRecord.W;
-                            teamObj.losses = teamRecord.L;
-                            teamObj.winningPercentage = teamRecord.PCT;
+                        // Safely get team name and winning percentage for both API and mock data structures
+                        teamObj.team = { 
+                            name: (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || "Unknown Team" 
+                        };
+                        teamObj.wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
+                        teamObj.losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
+                        teamObj.winningPercentage = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage) : parseFloat(teamRecord.PCT);
+                        
+                        // Only add to allTeams if winningPercentage is a valid number
+                        if (!isNaN(teamObj.winningPercentage)) {
+                             allTeams.push(teamObj);
                         }
-                        allTeams.push(teamObj);
                     });
 
                     // Custom sort: Mets first, then by winning percentage, then alphabetically
                     dataToDisplay.sort((a, b) => {
-                        const teamA = a.team ? a.team.name : a.team; // Handle both API and mock structures
-                        const teamB = b.team ? b.team.name : b.team;
+                        const teamA = (a.team && typeof a.team === 'object' ? a.team.name : a.team) || "";
+                        const teamB = (b.team && typeof b.team === 'object' ? b.team.name : b.team) || "";
 
                         if (teamA === "New York Mets" && teamB !== "New York Mets") return -1;
                         if (teamB === "New York Mets" && teamA !== "New York Mets") return 1;
@@ -679,7 +681,7 @@
                         dataToDisplay.forEach(teamRecord => {
                             const row = tableBody.insertRow();
                             // Safely access properties for both API and mock data structures
-                            const teamName = teamRecord.team ? (teamRecord.team.name || "Unknown Team") : (teamRecord.team || "Unknown Team");
+                            const teamName = (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || "Unknown Team";
                             const wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
                             const losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
                             const pct = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage).toFixed(3) : teamRecord.PCT;
@@ -723,8 +725,8 @@
                 const top5TeamsTableBody = document.getElementById('top-5-teams-table').querySelector('tbody');
                 top5TeamsTableBody.innerHTML = ''; // Clear existing rows
 
-                // Filter out teams with no winning percentage and sort for top 5
-                const teamsWithValidPct = allTeams.filter(team => team.winningPercentage !== undefined && team.winningPercentage !== null);
+                // Filter out teams with no valid winning percentage and sort for top 5
+                const teamsWithValidPct = allTeams.filter(team => !isNaN(parseFloat(team.winningPercentage)));
 
                 teamsWithValidPct.sort((a, b) => {
                     return (parseFloat(b.winningPercentage) || 0) - (parseFloat(a.winningPercentage) || 0);
@@ -760,6 +762,7 @@
 
             initializeApp();
 
+            // The app updates every 5 minutes.
             setInterval(initializeApp, 5 * 60 * 1000);
         });
     </script>
