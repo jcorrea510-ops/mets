@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New York Mets Fan Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0c0c; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 1.5rem;
+        }
+        .header {
+            background-color: #002D72; /* Mets Blue */
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 0.75rem; /* Rounded corners */
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            color: #FF5910; /* Mets Orange */
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 1.5rem;
+            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #FF5910;
+        }
+        .card {
+            background-color: #1a1a1a; /* Darker card background */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #333; /* Darker border */
+        }
+        th {
+            background-color: #002D72; /* Mets Blue for table headers */
+            color: white;
+            font-weight: 600; /* font-semibold */
+        }
+        tr:hover {
+            background-color: #2a2a2a; /* Slightly lighter on hover */
+        }
+        .score-card {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            padding: 2rem;
+            background: linear-gradient(135deg, #002D72, #FF5910); /* Gradient background */
+            color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .score-team {
+            text-align: center;
+        }
+        .score-divider {
+            margin: 0 1rem;
+        }
+        .game-status {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600;
+            margin-top: 1rem;
+            text-align: center;
+            color: #e0e0e0;
+        }
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin: 0 auto 0.5rem auto;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .score-card {
+                flex-direction: column;
+                font-size: 1.5rem;
+                padding: 1.5rem;
+            }
+            .score-divider {
+                margin: 1rem 0;
+            }
+            .team-logo {
+                width: 40px;
+                height: 40px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="text-4xl font-extrabold mb-2">New York Mets Fan Hub</h1>
+            <p class="text-xl">Your ultimate source for Mets scores, schedules, and standings!</p>
+        </header>
+
+        <!-- Current Score Section -->
+        <section class="card">
+            <h2 class="section-title">Current Game Score</h2>
+            <div id="current-score" class="score-card">
+                <!-- Dynamic content will be loaded here by JavaScript -->
+                <div class="score-team">
+                    <img src="[https://placehold.co/60x60/002D72/FFFFFF?text=NYM](https://placehold.co/60x60/002D72/FFFFFF?text=NYM)" alt="Mets Logo" class="team-logo">
+                    <span id="home-team-name">New York Mets</span>
+                    <br>
+                    <span id="home-team-score">--</span>
+                </div>
+                <div class="score-divider">-</div>
+                <div class="score-team">
+                    <img src="[https://placehold.co/60x60/808080/FFFFFF?text=OPP](https://placehold.co/60x60/808080/FFFFFF?text=OPP)" alt="Opponent Logo" class="team-logo">
+                    <span id="away-team-name">Opponent</span>
+                    <br>
+                    <span id="away-team-score">--</span>
+                </div>
+            </div>
+            <p id="game-status" class="game-status">Loading live game status...</p>
+        </section>
+
+        <!-- Upcoming Games Section -->
+        <section class="card">
+            <h2 class="section-title">Upcoming Mets Games</h2>
+            <div class="table-container">
+                <table id="upcoming-games-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time (EDT)</th>
+                            <th>Opponent</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Upcoming games will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Past Games Section -->
+        <section class="card">
+            <h2 class="section-title">Past Mets Game Results</h2>
+            <div class="table-container">
+                <table id="past-games-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Opponent</th>
+                            <th>Score</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Past games will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Standings Section -->
+        <section class="card">
+            <h2 class="section-title">MLB Standings</h2>
+
+            <h3 class="text-xl font-semibold text-white mb-4 text-center">NL East Standings</h3>
+            <div class="table-container mb-8">
+                <table id="nl-east-standings-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>PCT</th>
+                            <th>GB</th>
+                            <th>STRK</th>
+                            <th>L10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- NL East Standings populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-xl font-semibold text-white mb-4 text-center">AL East Standings</h3>
+            <div class="table-container mb-8">
+                <table id="al-east-standings-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>PCT</th>
+                            <th>GB</th>
+                            <th>STRK</th>
+                            <th>L10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- AL East Standings populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-xl font-semibold text-white mb-4 text-center">NL Central Standings</h3>
+            <div class="table-container mb-8">
+                <table id="nl-central-standings-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>PCT</th>
+                            <th>GB</th>
+                            <th>STRK</th>
+                            <th>L10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- NL Central Standings populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_KEY = "9920e2c5f46d63b74e44752cc2392422";
+            const API_HOST = "v1.baseball.api-sports.io";
+            // The Mets team ID on API-Sports is usually '24'.
+            // If you find that Mets data isn't showing up correctly,
+            // you might need to verify the exact team ID from the API's 'teams' endpoint.
+            const METS_TEAM_ID = "24";
+
+            // Helper to fetch data from API-Sports
+            async function fetchData(endpoint, params = {}) {
+                const queryString = new URLSearchParams(params).toString();
+                const url = `https://${API_HOST}/${endpoint}?${queryString}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'x-rapidapi-host': API_HOST,
+                            'x-apisports-key': API_KEY
+                        }
+                    });
+                    if (!response.ok) {
+                        // Log the error response from the API for debugging
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                    }
+                    const data = await response.json();
+                    if (data.results === 0) {
+                        console.warn(`API returned 0 results for ${endpoint} with params:`, params);
+                        return [];
+                    }
+                    return data.response;
+                } catch (error) {
+                    console.error(`Error fetching data from ${endpoint}:`, error);
+                    return null;
+                }
+            }
+
+            // Function to update current game score
+            async function updateCurrentScore() {
+                const homeTeamName = document.getElementById('home-team-name');
+                const awayTeamName = document.getElementById('away-team-name');
+                const homeTeamScore = document.getElementById('home-team-score');
+                const awayTeamScore = document.getElementById('away-team-score');
+                const gameStatus = document.getElementById('game-status');
+
+                gameStatus.textContent = "Loading live game status...";
+
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
+
+                // Try to get live games for today
+                const games = await fetchData('games', {
+                    date: formattedDate,
+                    timezone: 'America/New_York',
+                    league: '1', // MLB league ID is usually 1 for API-Sports
+                    season: year
+                });
+
+                if (games && games.length > 0) {
+                    const metsGame = games.find(game =>
+                        (game.teams.home.name === "New York Mets" || game.teams.away.name === "New York Mets") &&
+                        (game.status.short === "In Progress" || game.status.short === "Delayed" || game.status.short === "Suspended" || game.status.short === "1st" || game.status.short === "2nd" || game.status.short === "3rd" || game.status.short === "4th" || game.status.short === "5th" || game.status.short === "6th" || game.status.short === "7th" || game.status.short === "8th" || game.status.short === "9th" || game.status.short === "Extra Inning")
+                    );
+
+                    if (metsGame) {
+                        homeTeamName.textContent = metsGame.teams.home.name;
+                        awayTeamName.textContent = metsGame.teams.away.name;
+                        homeTeamScore.textContent = metsGame.scores.home.total !== null ? metsGame.scores.home.total : "--";
+                        awayTeamScore.textContent = metsGame.scores.away.total !== null ? metsGame.scores.away.total : "--";
+                        gameStatus.textContent = `Live: ${metsGame.status.long || 'In Progress'} - ${metsGame.status.comments || ''}`;
+                    } else {
+                        gameStatus.textContent = "No live Mets game currently.";
+                        homeTeamScore.textContent = "--";
+                        awayTeamScore.textContent = "--";
+                    }
+                } else {
+                    gameStatus.textContent = "No games scheduled for today or data unavailable.";
+                    homeTeamScore.textContent = "--";
+                    awayTeamScore.textContent = "--";
+                }
+            }
+
+            // Function to populate games tables
+            async function populateGames(type) {
+                const tableBody = document.querySelector(`#${type}-games-table tbody`);
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                const today = new Date();
+                const year = today.getFullYear();
+
+                let games;
+                if (type === 'upcoming') {
+                    // Fetch upcoming games from today onwards for the next 30 days
+                    const futureDate = new Date();
+                    futureDate.setDate(today.getDate() + 30); // Get games for the next 30 days
+
+                    const formattedToday = `${year}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const formattedFutureDate = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}-${String(futureDate.getDate()).padStart(2, '0')}`;
+
+                    games = await fetchData('games', {
+                        team: METS_TEAM_ID,
+                        league: '1',
+                        season: year,
+                        from: formattedToday,
+                        to: formattedFutureDate,
+                        timezone: 'America/New_York'
+                    });
+                    // Filter for games that are not yet started (NS), postponed (PPD), or delayed
+                    games = games ? games.filter(game => game.status.short === "NS" || game.status.short === "PPD" || game.status.short === "Delayed") : [];
+
+                } else if (type === 'past') {
+                    // Fetch past games from last 7 days up to yesterday
+                    const pastDate = new Date();
+                    pastDate.setDate(today.getDate() - 7); // Get games from last 7 days
+
+                    const yesterday = new Date();
+                    yesterday.setDate(today.getDate() - 1);
+
+                    const formattedPastDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
+                    const formattedYesterday = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+                    games = await fetchData('games', {
+                        team: METS_TEAM_ID,
+                        league: '1',
+                        season: year,
+                        from: formattedPastDate,
+                        to: formattedYesterday,
+                        timezone: 'America/New_York'
+                    });
+                    // Filter for finished games (FT)
+                    games = games ? games.filter(game => game.status.short === "FT") : [];
+                }
+
+                if (games && games.length > 0) {
+                    games.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date
+                    games.forEach(game => {
+                        const row = tableBody.insertRow();
+                        const gameDateTime = new Date(game.date);
+                        const gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                        const gameTime = gameDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                        if (type === 'upcoming') {
+                            row.insertCell().textContent = gameDate;
+                            row.insertCell().textContent = gameTime;
+                            row.insertCell().textContent = game.teams.home.id === METS_TEAM_ID ? game.teams.away.name : `@ ${game.teams.home.name}`;
+                            row.insertCell().textContent = game.venue.name;
+                        } else if (type === 'past') {
+                            row.insertCell().textContent = gameDate;
+                            // Determine opponent correctly for past games
+                            const opponentName = game.teams.home.id === METS_TEAM_ID ? game.teams.away.name : game.teams.home.name;
+                            row.insertCell().textContent = opponentName;
+                            
+                            // Ensure scores are displayed correctly regardless of home/away for Mets
+                            let metsScore, opponentScore;
+                            if (game.teams.home.id === METS_TEAM_ID) {
+                                metsScore = game.scores.home.total;
+                                opponentScore = game.scores.away.total;
+                            } else {
+                                metsScore = game.scores.away.total;
+                                opponentScore = game.scores.home.total;
+                            }
+                            row.insertCell().textContent = `${metsScore || '--'} - ${opponentScore || '--'}`;
+
+                            const result = (metsScore > opponentScore) ? 'W' : (metsScore < opponentScore ? 'L' : 'TBD'); // TBD for ties/unfinished
+                            row.insertCell().textContent = result;
+                        }
+                    });
+                } else {
+                    const row = tableBody.insertRow();
+                    const cell = row.insertCell();
+                    cell.colSpan = 4;
+                    cell.textContent = `No ${type} games found or data unavailable.`;
+                    cell.className = "text-center py-4";
+                }
+            }
+
+            // Function to populate standings tables
+            async function populateStandings() {
+                const standings = await fetchData('standings', {
+                    league: '1', // MLB league ID
+                    season: new Date().getFullYear()
+                });
+
+                if (standings && standings.length > 0) {
+                    const nlEastTableBody = document.querySelector('#nl-east-standings-table tbody');
+                    const alEastTableBody = document.querySelector('#al-east-standings-table tbody');
+                    const nlCentralTableBody = document.querySelector('#nl-central-standings-table tbody'); // Corrected NL Central tbody
+
+                    nlEastTableBody.innerHTML = '';
+                    alEastTableBody.innerHTML = '';
+                    nlCentralTableBody.innerHTML = '';
+
+                    standings.forEach(division => {
+                        let targetTableBody = null;
+                        if (division.group.name.includes("National League East")) {
+                            targetTableBody = nlEastTableBody;
+                        } else if (division.group.name.includes("American League East")) {
+                            targetTableBody = alEastTableBody;
+                        } else if (division.group.name.includes("National League Central")) {
+                            targetTableBody = nlCentralTableBody;
+                        }
+
+                        if (targetTableBody) {
+                            // Sort teams by rank within their division
+                            division.standings.sort((a, b) => a.rank - b.rank);
+
+                            division.standings.forEach(team => {
+                                const row = targetTableBody.insertRow();
+                                row.insertCell().textContent = team.team.name;
+                                row.insertCell().textContent = team.games.win.total;
+                                row.insertCell().textContent = team.games.lose.total;
+                                row.insertCell().textContent = team.percentage.wins !== null ? team.percentage.wins.toFixed(3) : '--';
+                                row.insertCell().textContent = team.gamesBehind !== null ? team.gamesBehind : '-';
+                                // Handle streak data
+                                const streakText = team.streak.type === 'wins' ? `W${team.streak.total}` : (team.streak.type === 'losses' ? `L${team.streak.total}` : '--');
+                                row.insertCell().textContent = streakText;
+                                // Handle L10 form data
+                                const formL10 = team.form && team.form.split('-').length === 2 ? `${team.form.split('-')[0]}-${team.form.split('-')[1]}` : '--';
+                                row.insertCell().textContent = formL10;
+                            });
+                        }
+                    });
+                } else {
+                     document.querySelector('#nl-east-standings-table tbody').innerHTML = '<tr><td colspan="7" class="text-center py-4">Standings data unavailable.</td></tr>';
+                     document.querySelector('#al-east-standings-table tbody').innerHTML = '<tr><td colspan="7" class="text-center py-4">Standings data unavailable.</td></tr>';
+                     document.querySelector('#nl-central-standings-table tbody').innerHTML = '<tr><td colspan="7" class="text-center py-4">Standings data unavailable.</td></tr>';
+                }
+            }
+
+            // Initial data load
+            async function initializeApp() {
+                await updateCurrentScore();
+                await populateGames('upcoming');
+                await populateGames('past');
+                await populateStandings();
+            }
+
+            initializeApp();
+
+            // Refresh data every 5 minutes (adjust as needed)
+            setInterval(initializeApp, 5 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>
