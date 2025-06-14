@@ -174,7 +174,7 @@
         <section class="card">
             <h2 class="section-title">MLB Standings</h2>
 
-            <h3 class="text-xl font-semibold text-white mb-4 text-center">Top 5 Teams by Win Percentage (2024 Season)</h3>
+            <h3 class="text-xl font-semibold text-white mb-4 text-center">Top 5 Teams by Win Percentage (Current Season)</h3>
             <div class="table-container mb-8">
                 <table id="top-5-teams-table" class="top-teams-table">
                     <thead>
@@ -209,9 +209,7 @@
             let displayedPastGamesCount = 0;
             const GAMES_PER_LOAD = 5;
 
-            // Mock Data for Fallback - Ensuring all divisions have mock data
-            // NOTE: These mock data arrays are only used if the MLB Stats API fails to return data.
-            // For live, current-season data, the API is the primary source.
+            // Mock Data for Fallback - Basic generic data in case API fails entirely
             const mockUpcomingGames = [
                 { date: "Sun, Jun 15, 2025", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
                 { date: "Tue, Jun 17, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
@@ -228,53 +226,14 @@
                 { date: "Fri, Jun 6, 2025", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L" },
             ];
 
-            // Mock data reflecting a more typical 2024 end-of-season scenario for demonstration
-            const mockNLEastStandings = [
-                { team: { name: "Atlanta Braves" }, wins: 104, losses: 58, winningPercentage: .642, gamesBack: "-", streak: { streakCode: "W3" }, lastTenGames: "8-2" },
-                { team: { name: "Philadelphia Phillies" }, wins: 90, losses: 72, winningPercentage: .556, gamesBack: "14.0", streak: { streakCode: "L1" }, lastTenGames: "6-4" },
-                { team: { name: "Miami Marlins" }, wins: 84, losses: 78, winningPercentage: .519, gamesBack: "20.0", streak: { streakCode: "L2" }, lastTenGames: "5-5" },
-                { team: { name: "New York Mets" }, wins: 75, losses: 87, winningPercentage: .463, gamesBack: "29.0", streak: { streakCode: "W1" }, lastTenGames: "4-6" },
-                { team: { name: "Washington Nationals" }, wins: 71, losses: 91, winningPercentage: .438, gamesBack: "33.0", streak: { streakCode: "L1" }, lastTenGames: "3-7" },
-            ];
-
-            const mockALEastStandings = [
-                { team: { name: "Baltimore Orioles" }, wins: 101, losses: 61, winningPercentage: .623, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "7-3" },
-                { team: { name: "Tampa Bay Rays" }, wins: 99, losses: 63, winningPercentage: .611, gamesBack: "2.0", streak: { streakCode: "W2" }, lastTenGames: "8-2" },
-                { team: { name: "Toronto Blue Jays" }, wins: 89, losses: 73, winningPercentage: .549, gamesBack: "12.0", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
-                { team: { name: "New York Yankees" }, wins: 82, losses: 80, winningPercentage: .506, gamesBack: "19.0", streak: { streakCode: "L3" }, lastTenGames: "4-6" },
-                { team: { name: "Boston Red Sox" }, wins: 78, losses: 84, winningPercentage: .481, gamesBack: "23.0", streak: { streakCode: "W1" }, lastTenGames: "5-5" },
-            ];
-
-            const mockNLCentralStandings = [
-                { team: { name: "Milwaukee Brewers" }, wins: 92, losses: 70, winningPercentage: .568, gamesBack: "-", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
-                { team: { name: "Chicago Cubs" }, wins: 83, losses: 79, winningPercentage: .512, gamesBack: "9.0", streak: { streakCode: "L2" }, lastTenGames: "4-6" },
-                { team: { name: "Cincinnati Reds" }, wins: 82, losses: 80, winningPercentage: .506, gamesBack: "10.0", streak: { streakCode: "W1" }, lastTenGames: "5-5" },
-                { team: { name: "St. Louis Cardinals" }, wins: 71, losses: 91, winningPercentage: .438, gamesBack: "21.0", streak: { streakCode: "L1" }, lastTenGames: "3-7" },
-                { team: { name: "Pittsburgh Pirates" }, wins: 76, losses: 86, winningPercentage: .469, gamesBack: "16.0", streak: { streakCode: "L1" }, lastTenGames: "6-4" },
-            ];
-            
-            const mockALCentralStandings = [
-                { team: { name: "Minnesota Twins" }, wins: 87, losses: 75, winningPercentage: .537, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "5-5" },
-                { team: { name: "Detroit Tigers" }, wins: 78, losses: 84, winningPercentage: .481, gamesBack: "9.0", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
-                { team: { name: "Cleveland Guardians" }, wins: 76, losses: 86, winningPercentage: .469, gamesBack: "11.0", streak: { streakCode: "L2" }, lastTenGames: "4-6" },
-                { team: { name: "Chicago White Sox" }, wins: 61, losses: 101, winningPercentage: .377, gamesBack: "26.0", streak: { streakCode: "L1" }, lastTenGames: "3-7" },
-                { team: { name: "Kansas City Royals" }, wins: 56, losses: 106, winningPercentage: .346, gamesBack: "31.0", streak: { streakCode: "L1" }, lastTenGames: "2-8" },
-            ];
-
-            const mockNLWestStandings = [
-                { team: { name: "Los Angeles Dodgers" }, wins: 100, losses: 62, winningPercentage: .617, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "6-4" }, 
-                { team: { name: "Arizona Diamondbacks" }, wins: 84, losses: 78, winningPercentage: .519, gamesBack: "16.0", streak: { streakCode: "W1" }, lastTenGames: "5-5" },
-                { team: { name: "San Diego Padres" }, wins: 82, losses: 80, winningPercentage: .506, gamesBack: "18.0", streak: { streakCode: "W1" }, lastTenGames: "7-3" },
-                { team: { name: "San Francisco Giants" }, wins: 79, losses: 83, winningPercentage: .488, gamesBack: "21.0", streak: { streakCode: "L2" }, lastTenGames: "4-6" },
-                { team: { name: "Colorado Rockies" }, wins: 59, losses: 103, winningPercentage: .364, gamesBack: "41.0", streak: { streakCode: "L1" }, lastTenGames: "2-8" },
-            ];
-
-            const mockALWestStandings = [
-                { team: { name: "Houston Astros" }, wins: 90, losses: 72, winningPercentage: .556, gamesBack: "-", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
-                { team: { name: "Texas Rangers" }, wins: 90, losses: 72, winningPercentage: .556, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "5-5" },
-                { team: { name: "Seattle Mariners" }, wins: 88, losses: 74, winningPercentage: .543, gamesBack: "2.0", streak: { streakCode: "W2" }, lastTenGames: "7-3" },
-                { team: { name: "Los Angeles Angels" }, wins: 73, losses: 89, winningPercentage: .451, gamesBack: "17.0", streak: { streakCode: "L3" }, lastTenGames: "4-6" },
-                { team: { name: "Oakland Athletics" }, wins: 50, losses: 112, winningPercentage: .309, gamesBack: "40.0", streak: { streakCode: "L1" }, lastTenGames: "2-8" },
+            // Generic mock data for standings, should only be used as a last resort fallback
+            // These numbers are not meant to be accurate, but rather to fill the tables if the API fails.
+            const mockGenericStandings = [
+                { team: { name: "New York Mets" }, wins: 30, losses: 30, winningPercentage: .500, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "5-5" },
+                { team: { name: "Team A" }, wins: 28, losses: 32, winningPercentage: .467, gamesBack: "2.0", streak: { streakCode: "W2" }, lastTenGames: "4-6" },
+                { team: { name: "Team B" }, wins: 32, losses: 28, winningPercentage: .533, gamesBack: "0.0", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
+                { team: { name: "Team C" }, wins: 25, losses: 35, winningPercentage: .417, gamesBack: "5.0", streak: { streakCode: "L3" }, lastTenGames: "3-7" },
+                { team: { name: "Team D" }, wins: 35, losses: 25, winningPercentage: .583, gamesBack: "0.0", streak: { streakCode: "W5" }, lastTenGames: "8-2" },
             ];
 
 
@@ -586,8 +545,8 @@
 
             // Function to populate standings tables using MLB Stats API
             async function populateStandings() {
-                // IMPORTANT: Fetching 2024 season data for accurate standings as 2025 data may be incomplete/unavailable
-                const seasonToFetch = 2024; 
+                // Fetching CURRENT year data for accurate standings as requested
+                const seasonToFetch = new Date().getFullYear(); 
 
                 // Fetch NL standings (includes NL East, Central, West)
                 const nlStandingsData = await fetchData('/standings', {
@@ -720,15 +679,15 @@
                 };
                 
                 // --- National League Divisions ---
-                createAndPopulateStandingsTable(nlStandingsData, mockNLEastStandings, "NL East Standings", 203);
-                createAndPopulateStandingsTable(nlStandingsData, mockNLCentralStandings, "NL Central Standings", 204);
-                createAndPopulateStandingsTable(nlStandingsData, mockNLWestStandings, "NL West Standings", 205);
+                createAndPopulateStandingsTable(nlStandingsData, mockGenericStandings, "NL East Standings", 203);
+                createAndPopulateStandingsTable(nlStandingsData, mockGenericStandings, "NL Central Standings", 204);
+                createAndPopulateStandingsTable(nlStandingsData, mockGenericStandings, "NL West Standings", 205);
 
 
                 // --- American League Divisions ---
-                createAndPopulateStandingsTable(alStandingsData, mockALEastStandings, "AL East Standings", 201);
-                createAndPopulateStandingsTable(alStandingsData, mockALCentralStandings, "AL Central Standings", 202);
-                createAndPopulateStandingsTable(alStandingsData, mockALWestStandings, "AL West Standings", 200);
+                createAndPopulateStandingsTable(alStandingsData, mockGenericStandings, "AL East Standings", 201);
+                createAndPopulateStandingsTable(alStandingsData, mockGenericStandings, "AL Central Standings", 202);
+                createAndPopulateStandingsTable(alStandingsData, mockGenericStandings, "AL West Standings", 200);
 
                 // Populate Top 5 Teams
                 const top5TeamsTableBody = document.getElementById('top-5-teams-table').querySelector('tbody');
