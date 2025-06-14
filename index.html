@@ -17,7 +17,6 @@
             margin: auto;
             padding: 1.5rem;
         }
-        /* Removed .header style as the element is being removed */
         .section-title {
             color: #FF5910; /* Mets Orange */
             font-size: 1.875rem; /* text-3xl */
@@ -104,6 +103,13 @@
             cursor: not-allowed;
             opacity: 0.6;
         }
+        .mets-highlight {
+            background-color: #004d9c; /* A slightly lighter Mets blue for highlighting */
+            font-weight: bold;
+        }
+        .top-teams-table th, .top-teams-table td {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -118,18 +124,15 @@
                     <span id="home-team-name">New York Mets</span>
                     <br>
                     <span id="home-team-score">--</span>
-                    <div id="home-team-pitcher" class="team-info"></div>
                 </div>
                 <div class="score-divider">-</div>
                 <div class="score-team">
                     <span id="away-team-name">Opponent</span>
                     <br>
                     <span id="away-team-score">--</span>
-                    <div id="away-team-pitcher" class="team-info"></div>
                 </div>
             </div>
             <p id="game-status" class="game-status">Loading live game status...</p>
-            <p id="game-detail" class="game-status text-base"></p> <!-- For outs/bases if available -->
         </section>
 
         <!-- Upcoming Series Section -->
@@ -175,65 +178,27 @@
         <section class="card">
             <h2 class="section-title">MLB Standings</h2>
 
-            <h3 class="text-xl font-semibold text-white mb-4 text-center">NL East Standings</h3>
+            <h3 class="text-xl font-semibold text-white mb-4 text-center">Top 5 Teams by Win Percentage</h3>
             <div class="table-container mb-8">
-                <table id="nl-east-standings-table">
+                <table id="top-5-teams-table" class="top-teams-table">
                     <thead>
                         <tr>
+                            <th>Rank</th>
                             <th>Team</th>
                             <th>W</th>
                             <th>L</th>
                             <th>PCT</th>
-                            <th>GB</th>
-                            <th>STRK</th>
-                            <th>L10</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- NL East Standings populated by JavaScript -->
+                        <!-- Top 5 teams will be populated here by JavaScript -->
                     </tbody>
                 </table>
             </div>
 
-            <h3 class="text-xl font-semibold text-white mb-4 text-center">AL East Standings</h3>
-            <div class="table-container mb-8">
-                <table id="al-east-standings-table">
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th>W</th>
-                            <th>L</th>
-                            <th>PCT</th>
-                            <th>GB</th>
-                            <th>STRK</th>
-                            <th>L10</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- AL East Standings populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+            <!-- Dynamic Standings Sections will be generated here -->
+            <div id="dynamic-standings-sections"></div>
 
-            <h3 class="text-xl font-semibold text-white mb-4 text-center">NL Central Standings</h3>
-            <div class="table-container mb-8">
-                <table id="nl-central-standings-table">
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th>W</th>
-                            <th>L</th>
-                            <th>PCT</th>
-                            <th>GB</th>
-                            <th>STRK</th>
-                            <th>L10</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- NL Central Standings populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
         </section>
     </div>
 
@@ -335,14 +300,9 @@
                 const homeTeamScore = document.getElementById('home-team-score');
                 const awayTeamScore = document.getElementById('away-team-score');
                 const gameStatus = document.getElementById('game-status');
-                const homeTeamPitcher = document.getElementById('home-team-pitcher');
-                const awayTeamPitcher = document.getElementById('away-team-pitcher');
-                const gameDetail = document.getElementById('game-detail');
-
+                // Removed pitcher and game detail elements
+                
                 gameStatus.textContent = "Loading live game status...";
-                homeTeamPitcher.textContent = "";
-                awayTeamPitcher.textContent = "";
-                gameDetail.textContent = "";
 
                 const today = new Date();
                 const year = today.getFullYear();
@@ -350,11 +310,9 @@
                 const day = String(today.getDate()).padStart(2, '0');
                 const formattedDate = `${year}-${month}-${day}`;
 
-                // Request probablePitcher for initial load, if game is Live (I) or Pre-Game (P)
                 const scheduleData = await fetchData('/schedule', {
                     date: formattedDate,
                     sportId: 1, // MLB
-                    hydrate: 'probablePitcher' 
                 });
 
                 if (scheduleData && scheduleData.dates && scheduleData.dates.length > 0) {
@@ -371,39 +329,17 @@
                         awayTeamScore.textContent = metsGame.teams.away.score !== undefined ? metsGame.teams.away.score : "--";
                         
                         let currentStatus = metsGame.status.detailedState;
-                        let gameDetailsText = '';
 
                         if (metsGame.status.codedGameState === "I") {
-                            // In-progress game
                             currentStatus = `${metsGame.inningInfo?.inningHalf || ''} ${metsGame.inningInfo?.currentInning || ''}${getOrdinalSuffix(metsGame.inningInfo?.currentInning)}`;
-                            
-                            // To get outs and bases, we need a separate call to the live feed endpoint,
-                            // which is usually rate-limited or requires deeper access.
-                            // For simplicity and avoiding rate limits on public API, we'll indicate if it's available.
-                            // The `schedule` endpoint doesn't typically provide this level of detail.
-                             gameDetailsText = `(Detailed pitch/base info may require a different API endpoint)`;
-
-
                         } else if (metsGame.status.codedGameState === "P" || metsGame.status.codedGameState === "S") {
-                            // Pre-Game or Scheduled
                             const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                             currentStatus = `Scheduled: ${gameTime}`;
                         } else if (metsGame.status.codedGameState === "F" || metsGame.status.codedGameState === "O") {
-                            // Final or Completed
                             currentStatus = "Final"; 
                         }
 
                         gameStatus.textContent = currentStatus;
-                        gameDetail.textContent = gameDetailsText;
-
-                        // Probable Pitchers
-                        if (metsGame.probablePitchers) {
-                            homeTeamPitcher.textContent = `P: ${metsGame.probablePitchers.home?.fullName || 'TBD'}`;
-                            awayTeamPitcher.textContent = `P: ${metsGame.probablePitchers.away?.fullName || 'TBD'}`;
-                        } else {
-                            homeTeamPitcher.textContent = ''; // Removed if not available
-                            awayTeamPitcher.textContent = ''; // Removed if not available
-                        }
 
                     } else {
                         gameStatus.textContent = "No live Mets game currently.";
@@ -411,9 +347,6 @@
                         awayTeamName.textContent = "Opponent";
                         homeTeamScore.textContent = "--";
                         awayTeamScore.textContent = "--";
-                        homeTeamPitcher.textContent = '';
-                        awayTeamPitcher.textContent = '';
-                        gameDetail.textContent = "";
                     }
                 } else {
                     gameStatus.textContent = "No games scheduled for today or data unavailable from MLB Stats API.";
@@ -421,9 +354,6 @@
                     awayTeamName.textContent = "Opponent";
                     homeTeamScore.textContent = "--";
                     awayTeamScore.textContent = "--";
-                    homeTeamPitcher.textContent = '';
-                    awayTeamPitcher.textContent = '';
-                    gameDetail.textContent = "";
                 }
             }
             
@@ -638,48 +568,71 @@
 
             // Function to populate standings tables using MLB Stats API
             async function populateStandings() {
-                // Fetch NL standings (includes NL East, Central, West)
                 const nlStandingsData = await fetchData('/standings', {
                     leagueId: 103, // National League ID
                     season: new Date().getFullYear(),
                     standingsTypes: 'regularSeason'
                 });
                 
-                // Fetch AL standings (includes AL East, Central, West)
                 const alStandingsData = await fetchData('/standings', {
                     leagueId: 104, // American League ID
                     season: new Date().getFullYear(),
                     standingsTypes: 'regularSeason'
                 });
 
-                const nlEastTableBody = document.querySelector('#nl-east-standings-table tbody');
-                const alEastTableBody = document.querySelector('#al-east-standings-table tbody');
-                const nlCentralTableBody = document.querySelector('#nl-central-standings-table tbody'); 
+                const dynamicStandingsSections = document.getElementById('dynamic-standings-sections');
+                dynamicStandingsSections.innerHTML = ''; // Clear previous dynamic sections
 
-                nlEastTableBody.innerHTML = '';
-                alEastTableBody.innerHTML = '';
-                nlCentralTableBody.innerHTML = '';
+                let allTeams = []; // To collect all teams for top 5
 
-                // Helper to populate a single standings table
-                const populateSingleStandingsTable = (tableBody, apiRecords, mockData, divisionName, divisionId) => {
-                    let dataToDisplay = [];
-                    // Find the specific division's data from the API response
+                // Helper to create and populate a single standings table
+                const createAndPopulateStandingsTable = (apiRecords, mockData, divisionName, divisionId) => {
                     const divisionApiData = apiRecords ? apiRecords.records.find(record => record.division.id === divisionId)?.teamRecords : null;
+                    let dataToDisplay = [];
 
                     if (divisionApiData && divisionApiData.length > 0) {
                         dataToDisplay = divisionApiData;
+                        // Add to allTeams for top 5 calculation
+                        allTeams = allTeams.concat(dataToDisplay);
+
                         dataToDisplay.sort((a, b) => {
-                             // Sort by winning percentage descending, then alphabetically by team name
                             if (a.winningPercentage !== b.winningPercentage) {
                                 return (parseFloat(b.winningPercentage) || 0) - (parseFloat(a.winningPercentage) || 0);
                             }
                             return a.team.name.localeCompare(b.team.name);
                         });
                     } else {
-                        dataToDisplay = mockData; // Fallback to mock data
-                        // Sort mock data by PCT descending
+                        dataToDisplay = mockData;
                         dataToDisplay.sort((a,b) => (parseFloat(b.PCT) || 0) - (parseFloat(a.PCT) || 0));
                     }
+
+                    // Create elements for this division
+                    const divisionHeader = document.createElement('h3');
+                    divisionHeader.className = "text-xl font-semibold text-white mb-4 text-center mt-8";
+                    divisionHeader.textContent = divisionName;
+                    dynamicStandingsSections.appendChild(divisionHeader);
+
+                    const tableContainer = document.createElement('div');
+                    tableContainer.className = "table-container mb-8";
+                    dynamicStandingsSections.appendChild(tableContainer);
+
+                    const table = document.createElement('table');
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th>W</th>
+                                <th>L</th>
+                                <th>PCT</th>
+                                <th>GB</th>
+                                <th>STRK</th>
+                                <th>L10</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    `;
+                    tableContainer.appendChild(table);
+                    const tableBody = table.querySelector('tbody');
 
                     if (dataToDisplay && dataToDisplay.length > 0) {
                         dataToDisplay.forEach(teamRecord => {
@@ -699,6 +652,10 @@
                             row.insertCell().textContent = gb !== null ? gb : '-'; 
                             row.insertCell().textContent = streak;
                             row.insertCell().textContent = lastTen;
+
+                            if (teamName === "New York Mets") {
+                                row.classList.add('mets-highlight');
+                            }
                         });
                     } else {
                         const row = tableBody.insertRow();
@@ -709,12 +666,59 @@
                     }
                 };
                 
-                // Populate NL East
-                populateSingleStandingsTable(nlEastTableBody, nlStandingsData, mockNLEastStandings, "NL East", 203);
-                // Populate AL East
-                populateSingleStandingsTable(alEastTableBody, alStandingsData, mockALEastStandings, "AL East", 201);
-                // Populate NL Central
-                populateSingleStandingsTable(nlCentralTableBody, nlStandingsData, mockNLCentralStandings, "NL Central", 204);
+                // Populate all divisions from NL
+                if (nlStandingsData && nlStandingsData.records) {
+                    nlStandingsData.records.forEach(divisionRecord => {
+                        createAndPopulateStandingsTable(nlStandingsData, [], divisionRecord.division.name, divisionRecord.division.id);
+                    });
+                } else {
+                    // Fallback to mock data for specific divisions if NL API data is completely missing
+                    createAndPopulateStandingsTable(null, mockNLEastStandings, "NL East (Fallback)", 203);
+                    createAndPopulateStandingsTable(null, mockNLCentralStandings, "NL Central (Fallback)", 204);
+                    // Add other NL divisions if mock data is available for them
+                }
+
+                // Populate all divisions from AL
+                if (alStandingsData && alStandingsData.records) {
+                    alStandingsData.records.forEach(divisionRecord => {
+                        createAndPopulateStandingsTable(alStandingsData, [], divisionRecord.division.name, divisionRecord.division.id);
+                    });
+                } else {
+                    // Fallback to mock data for specific divisions if AL API data is completely missing
+                    createAndPopulateStandingsTable(null, mockALEastStandings, "AL East (Fallback)", 201);
+                    // Add other AL divisions if mock data is available for them
+                }
+
+
+                // Populate Top 5 Teams
+                const top5TeamsTableBody = document.getElementById('top-5-teams-table').querySelector('tbody');
+                top5TeamsTableBody.innerHTML = ''; // Clear existing rows
+
+                // Filter out teams with no winning percentage (e.g., from divisions with no games yet)
+                const teamsWithValidPct = allTeams.filter(team => team.winningPercentage !== undefined && team.winningPercentage !== null);
+
+                teamsWithValidPct.sort((a, b) => {
+                    return (parseFloat(b.winningPercentage) || 0) - (parseFloat(a.winningPercentage) || 0);
+                });
+
+                const top5Teams = teamsWithValidPct.slice(0, 5);
+
+                if (top5Teams.length > 0) {
+                    top5Teams.forEach((team, index) => {
+                        const row = top5TeamsTableBody.insertRow();
+                        row.insertCell().textContent = index + 1;
+                        row.insertCell().textContent = team.team ? (team.team.name || "Unknown Team") : "Unknown Team";
+                        row.insertCell().textContent = team.wins || '--';
+                        row.insertCell().textContent = team.losses || '--';
+                        row.insertCell().textContent = team.winningPercentage !== undefined ? parseFloat(team.winningPercentage).toFixed(3) : '--';
+                    });
+                } else {
+                    const row = top5TeamsTableBody.insertRow();
+                    const cell = row.insertCell();
+                    cell.colSpan = 5;
+                    cell.textContent = "No top teams data available.";
+                    cell.className = "text-center py-4";
+                }
             }
 
 
