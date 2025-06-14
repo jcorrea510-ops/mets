@@ -210,6 +210,8 @@
             const GAMES_PER_LOAD = 5;
 
             // Mock Data for Fallback - Ensuring all divisions have mock data
+            // NOTE: These mock data arrays are only used if the MLB Stats API fails to return data.
+            // For live, current-season data, the API is the primary source.
             const mockUpcomingGames = [
                 { date: "Sun, Jun 15, 2025", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
                 { date: "Tue, Jun 17, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
@@ -259,7 +261,7 @@
             ];
 
             const mockNLWestStandings = [
-                { team: "Los Angeles Dodgers", W: 50, L: 20, PCT: ".714", GB: "-", STRK: "W5", L10: "8-2" },
+                { team: "Los Angeles Dodgers", W: 50, L: 20, PCT: ".714", GB: "-", STRK: "W5", L10: "8-2" }, // This record seems to be causing concern
                 { team: "San Diego Padres", W: 40, L: 30, PCT: ".571", GB: "10.0", STRK: "L1", L10: "5-5" },
                 { team: "Arizona Diamondbacks", W: 35, L: 35, PCT: ".500", GB: "15.0", STRK: "W2", L10: "6-4" },
                 { team: "San Francisco Giants", W: 30, L: 40, PCT: ".429", GB: "20.0", STRK: "L3", L10: "4-6" },
@@ -619,14 +621,14 @@
                         const teamObj = {};
                         // Safely get team name and winning percentage for both API and mock data structures
                         teamObj.team = { 
-                            name: (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || "Unknown Team" 
+                            name: (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || teamRecord.team || "Unknown Team" 
                         };
                         teamObj.wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
                         teamObj.losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
                         teamObj.winningPercentage = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage) : parseFloat(teamRecord.PCT);
                         
-                        // Only add to allTeams if winningPercentage is a valid number
-                        if (!isNaN(teamObj.winningPercentage)) {
+                        // Only add to allTeams if winningPercentage is a valid number and team name is not "Unknown Team"
+                        if (teamObj.team.name !== "Unknown Team" && !isNaN(teamObj.winningPercentage)) {
                              allTeams.push(teamObj);
                         }
                     });
@@ -681,7 +683,7 @@
                         dataToDisplay.forEach(teamRecord => {
                             const row = tableBody.insertRow();
                             // Safely access properties for both API and mock data structures
-                            const teamName = (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || "Unknown Team";
+                            const teamName = (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || teamRecord.team || "Unknown Team";
                             const wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
                             const losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
                             const pct = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage).toFixed(3) : teamRecord.PCT;
