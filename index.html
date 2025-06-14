@@ -110,8 +110,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Removed Header as requested -->
-
         <!-- Current Score Section -->
         <section class="card">
             <h2 class="section-title">Current Game Score</h2>
@@ -172,7 +170,7 @@
 
         <!-- Standings Section -->
         <section class="card">
-            <h2 class="section-title">MLB Standings</h2>
+            <h2 class="section-title">MLB Standings (from MLB Stats API - Current Season)</h2>
 
             <h3 class="text-xl font-semibold text-white mb-4 text-center">Top 5 Teams by Win Percentage (Current Season)</h3>
             <div class="table-container mb-8">
@@ -209,7 +207,17 @@
             let displayedPastGamesCount = 0;
             const GAMES_PER_LOAD = 5;
 
-            // Mock Data for Fallback - Basic generic data in case API fails entirely
+            // Generic mock data for fallback standings, should only be used as a last resort
+            // when the API returns no data for a given division for the current season.
+            const mockGenericStandings = [
+                { team: { name: "Team A (Mock)" }, wins: 0, losses: 0, winningPercentage: .000, gamesBack: "--", streak: { streakCode: "--" }, lastTenGames: "--" },
+                { team: { name: "Team B (Mock)" }, wins: 0, losses: 0, winningPercentage: .000, gamesBack: "--", streak: { streakCode: "--" }, lastTenGames: "--" },
+                { team: { name: "Team C (Mock)" }, wins: 0, losses: 0, winningPercentage: .000, gamesBack: "--", streak: { streakCode: "--" }, lastTenGames: "--" },
+                { team: { name: "Team D (Mock)" }, wins: 0, losses: 0, winningPercentage: .000, gamesBack: "--", streak: { streakCode: "--" }, lastTenGames: "--" },
+                { team: { name: "Team E (Mock)" }, wins: 0, losses: 0, winningPercentage: .000, gamesBack: "--", streak: { streakCode: "--" }, lastTenGames: "--" },
+            ];
+
+            // Mock data for past and upcoming games are kept for robustness in schedule sections
             const mockUpcomingGames = [
                 { date: "Sun, Jun 15, 2025", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
                 { date: "Tue, Jun 17, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
@@ -224,16 +232,6 @@
                 { date: "Sun, Jun 8, 2025", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W" },
                 { date: "Sat, Jun 7, 2025", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W" },
                 { date: "Fri, Jun 6, 2025", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L" },
-            ];
-
-            // Generic mock data for standings, should only be used as a last resort fallback
-            // These numbers are not meant to be accurate, but rather to fill the tables if the API fails.
-            const mockGenericStandings = [
-                { team: { name: "New York Mets" }, wins: 30, losses: 30, winningPercentage: .500, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "5-5" },
-                { team: { name: "Team A" }, wins: 28, losses: 32, winningPercentage: .467, gamesBack: "2.0", streak: { streakCode: "W2" }, lastTenGames: "4-6" },
-                { team: { name: "Team B" }, wins: 32, losses: 28, winningPercentage: .533, gamesBack: "0.0", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
-                { team: { name: "Team C" }, wins: 25, losses: 35, winningPercentage: .417, gamesBack: "5.0", streak: { streakCode: "L3" }, lastTenGames: "3-7" },
-                { team: { name: "Team D" }, wins: 35, losses: 25, winningPercentage: .583, gamesBack: "0.0", streak: { streakCode: "W5" }, lastTenGames: "8-2" },
             ];
 
 
@@ -673,7 +671,7 @@
                         const row = tableBody.insertRow();
                         const cell = row.insertCell();
                         cell.colSpan = 7;
-                        cell.textContent = `${divisionName} Standings data unavailable.`;
+                        cell.textContent = `${divisionName} Standings data unavailable from MLB Stats API for current season. Showing mock data.`;
                         cell.className = "text-center py-4";
                     }
                 };
@@ -718,7 +716,7 @@
                     const row = top5TeamsTableBody.insertRow();
                     const cell = row.insertCell();
                     cell.colSpan = 5;
-                    cell.textContent = "No top teams data available or valid teams to display.";
+                    cell.textContent = "No top teams data available from MLB Stats API for current season. Showing mock data.";
                     cell.className = "text-center py-4";
                 }
             }
