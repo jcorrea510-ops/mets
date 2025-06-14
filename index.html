@@ -228,52 +228,53 @@
                 { date: "Fri, Jun 6, 2025", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L" },
             ];
 
+            // Re-evaluating mock data to be more generic in case of API issues
             const mockNLEastStandings = [
-                { team: "New York Mets", W: 45, L: 25, PCT: ".643", GB: "-", STRK: "L1", L10: "7-3" },
-                { team: "Philadelphia Phillies", W: 40, L: 29, PCT: ".580", GB: "4.5", STRK: "W2", L10: "4-6" },
-                { team: "Atlanta Braves", W: 30, L: 38, PCT: ".441", GB: "14.0", STRK: "W2", L10: "3-7" },
-                { team: "Washington Nationals", W: 30, L: 39, PCT: ".435", GB: "14.5", STRK: "L6", L10: "2-8" },
-                { team: "Miami Marlins", W: 26, L: 41, PCT: ".388", GB: "17.5", STRK: "W1", L10: "3-7" },
+                { team: { name: "New York Mets" }, wins: 45, losses: 25, winningPercentage: .643, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "7-3" },
+                { team: { name: "Philadelphia Phillies" }, wins: 40, losses: 29, winningPercentage: .580, gamesBack: "4.5", streak: { streakCode: "W2" }, lastTenGames: "4-6" },
+                { team: { name: "Atlanta Braves" }, wins: 30, losses: 38, winningPercentage: .441, gamesBack: "14.0", streak: { streakCode: "W2" }, lastTenGames: "3-7" },
+                { team: { name: "Washington Nationals" }, wins: 30, losses: 39, winningPercentage: .435, gamesBack: "14.5", streak: { streakCode: "L6" }, lastTenGames: "2-8" },
+                { team: { name: "Miami Marlins" }, wins: 26, losses: 41, winningPercentage: .388, gamesBack: "17.5", streak: { streakCode: "W1" }, lastTenGames: "3-7" },
             ];
 
             const mockALEastStandings = [
-                { team: "New York Yankees", W: 42, L: 26, PCT: ".618", GB: "-", STRK: "L1", L10: "6-4" },
-                { team: "Toronto Blue Jays", W: 38, L: 31, PCT: ".551", GB: "4.5", STRK: "L1", L10: "7-3" },
-                { team: "Tampa Bay Rays", W: 37, L: 32, PCT: ".536", GB: "5.5", STRK: "W1", L10: "7-3" },
-                { team: "Boston Red Sox", W: 35, L: 36, PCT: ".493", GB: "8.5", STRK: "W3", L10: "6-4" },
-                { team: "Baltimore Orioles", W: 28, L: 40, PCT: ".412", GB: "14.0", STRK: "W1", L10: "6-4" },
+                { team: { name: "New York Yankees" }, wins: 42, losses: 26, winningPercentage: .618, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "6-4" },
+                { team: { name: "Toronto Blue Jays" }, wins: 38, losses: 31, winningPercentage: .551, gamesBack: "4.5", streak: { streakCode: "L1" }, lastTenGames: "7-3" },
+                { team: { name: "Tampa Bay Rays" }, wins: 37, losses: 32, winningPercentage: .536, gamesBack: "5.5", streak: { streakCode: "W1" }, lastTenGames: "7-3" },
+                { team: { name: "Boston Red Sox" }, wins: 35, losses: 36, winningPercentage: .493, gamesBack: "8.5", streak: { streakCode: "W3" }, lastTenGames: "6-4" },
+                { team: { name: "Baltimore Orioles" }, wins: 28, losses: 40, winningPercentage: .412, gamesBack: "14.0", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
             ];
 
             const mockNLCentralStandings = [
-                { team: "Chicago Cubs", W: 42, L: 28, PCT: ".600", GB: "-", STRK: "L1", L10: "4-6" },
-                { team: "Milwaukee Brewers", W: 38, L: 33, PCT: ".535", GB: "4.5", STRK: "W2", L10: "5-5" },
-                { team: "St. Louis Cardinals", W: 36, L: 34, PCT: ".514", GB: "6.0", STRK: "L6", L10: "3-7" },
-                { team: "Cincinnati Reds", W: 35, L: 35, PCT: ".500", GB: "7.0", STRK: "L2", L10: "6-4" },
-                { team: "Pittsburgh Pirates", W: 29, L: 42, PCT: ".408", GB: "13.5", STRK: "W1", L10: "7-3" },
+                { team: { name: "Chicago Cubs" }, wins: 42, losses: 28, winningPercentage: .600, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "4-6" },
+                { team: { name: "Milwaukee Brewers" }, wins: 38, losses: 33, winningPercentage: .535, gamesBack: "4.5", streak: { streakCode: "W2" }, lastTenGames: "5-5" },
+                { team: { name: "St. Louis Cardinals" }, wins: 36, losses: 34, winningPercentage: .514, gamesBack: "6.0", streak: { streakCode: "L6" }, lastTenGames: "3-7" },
+                { team: { name: "Cincinnati Reds" }, wins: 35, losses: 35, winningPercentage: .500, gamesBack: "7.0", streak: { streakCode: "L2" }, lastTenGames: "6-4" },
+                { team: "Pittsburgh Pirates", wins: 29, losses: 42, winningPercentage: .408, gamesBack: "13.5", streak: { streakCode: "W1" }, lastTenGames: "7-3" },
             ];
             
             const mockALCentralStandings = [
-                { team: "Cleveland Guardians", W: 40, L: 29, PCT: ".580", GB: "-", STRK: "W3", L10: "7-3" },
-                { team: "Minnesota Twins", W: 35, L: 34, PCT: ".507", GB: "5.0", STRK: "L1", L10: "6-4" },
-                { team: "Kansas City Royals", W: 30, L: 39, PCT: ".435", GB: "10.0", STRK: "L2", L10: "4-6" },
-                { team: "Detroit Tigers", W: 28, L: 41, PCT: ".406", GB: "12.0", STRK: "L3", L10: "3-7" },
-                { team: "Chicago White Sox", W: 20, L: 49, PCT: ".290", GB: "20.0", STRK: "L10", L10: "0-10" },
+                { team: { name: "Cleveland Guardians" }, wins: 40, losses: 29, winningPercentage: .580, gamesBack: "-", streak: { streakCode: "W3" }, lastTenGames: "7-3" },
+                { team: { name: "Minnesota Twins" }, wins: 35, losses: 34, winningPercentage: .507, gamesBack: "5.0", streak: { streakCode: "L1" }, lastTenGames: "6-4" },
+                { team: { name: "Kansas City Royals" }, wins: 30, losses: 39, winningPercentage: .435, gamesBack: "10.0", streak: { streakCode: "L2" }, lastTenGames: "4-6" },
+                { team: { name: "Detroit Tigers" }, wins: 28, losses: 41, winningPercentage: .406, gamesBack: "12.0", streak: { streakCode: "L3" }, lastTenGames: "3-7" },
+                { team: { name: "Chicago White Sox" }, wins: 20, losses: 49, winningPercentage: .290, gamesBack: "20.0", streak: { streakCode: "L10" }, lastTenGames: "0-10" },
             ];
 
             const mockNLWestStandings = [
-                { team: "Los Angeles Dodgers", W: 50, L: 20, PCT: ".714", GB: "-", STRK: "W5", L10: "8-2" }, // This record seems to be causing concern
-                { team: "San Diego Padres", W: 40, L: 30, PCT: ".571", GB: "10.0", STRK: "L1", L10: "5-5" },
-                { team: "Arizona Diamondbacks", W: 35, L: 35, PCT: ".500", GB: "15.0", STRK: "W2", L10: "6-4" },
-                { team: "San Francisco Giants", W: 30, L: 40, PCT: ".429", GB: "20.0", STRK: "L3", L10: "4-6" },
-                { team: "Colorado Rockies", W: 20, L: 50, PCT: ".286", GB: "30.0", STRK: "L1", L10: "2-8" },
+                { team: { name: "Los Angeles Dodgers" }, wins: 42, losses: 29, winningPercentage: .592, gamesBack: "-", streak: { streakCode: "W1" }, lastTenGames: "6-4" }, // Corrected mock data for Dodgers
+                { team: { name: "San Diego Padres" }, wins: 38, losses: 33, winningPercentage: .535, gamesBack: "4.0", streak: { streakCode: "L1" }, lastTenGames: "5-5" },
+                { team: { name: "Arizona Diamondbacks" }, wins: 35, losses: 36, winningPercentage: .493, gamesBack: "7.0", streak: { streakCode: "W2" }, lastTenGames: "6-4" },
+                { team: "San Francisco Giants", wins: 32, losses: 39, winningPercentage: .451, gamesBack: "10.0", streak: { streakCode: "L3" }, lastTenGames: "4-6" },
+                { team: "Colorado Rockies", wins: 25, losses: 45, winningPercentage: .357, gamesBack: "16.5", streak: { streakCode: "L1" }, lastTenGames: "2-8" },
             ];
 
             const mockALWestStandings = [
-                { team: "Houston Astros", W: 48, L: 22, PCT: ".686", GB: "-", STRK: "W4", L10: "9-1" },
-                { team: "Texas Rangers", W: 38, L: 32, PCT: ".543", GB: "10.0", STRK: "L2", L10: "6-4" },
-                { team: "Seattle Mariners", W: 35, L: 35, PCT: ".500", GB: "13.0", STRK: "W1", L10: "5-5" },
-                { team: "Los Angeles Angels", W: 30, L: 40, PCT: ".429", GB: "18.0", STRK: "L5", L10: "2-8" },
-                { team: "Oakland Athletics", W: 25, L: 45, PCT: ".357", GB: "23.0", STRK: "W1", L10: "3-7" },
+                { team: { name: "Houston Astros" }, wins: 45, losses: 25, winningPercentage: .643, gamesBack: "-", streak: { streakCode: "W4" }, lastTenGames: "9-1" },
+                { team: { name: "Texas Rangers" }, wins: 38, losses: 32, winningPercentage: .543, gamesBack: "7.0", streak: { streakCode: "L2" }, lastTenGames: "6-4" },
+                { team: { name: "Seattle Mariners" }, wins: 35, losses: 35, winningPercentage: .500, gamesBack: "10.0", streak: { streakCode: "W1" }, lastTenGames: "5-5" },
+                { team: { name: "Los Angeles Angels" }, wins: 30, losses: 40, winningPercentage: .429, gamesBack: "15.0", streak: { streakCode: "L5" }, lastTenGames: "2-8" },
+                { team: { name: "Oakland Athletics" }, wins: 25, losses: 45, winningPercentage: .357, gamesBack: "20.0", streak: { streakCode: "W1" }, lastTenGames: "3-7" },
             ];
 
 
@@ -612,31 +613,34 @@
 
                     if (divisionApiData && divisionApiData.length > 0) {
                         dataToDisplay = divisionApiData;
+                        console.log(`API data for ${divisionName}:`, dataToDisplay); // Log API data
                     } else {
                         dataToDisplay = mockData;
+                        console.log(`Using mock data for ${divisionName}:`, dataToDisplay); // Log mock data
                     }
 
                     // Add teams from this division to allTeams for overall top 5 calculation
                     dataToDisplay.forEach(teamRecord => {
                         const teamObj = {};
                         // Safely get team name and winning percentage for both API and mock data structures
-                        teamObj.team = { 
-                            name: (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || teamRecord.team || "Unknown Team" 
-                        };
+                        const currentTeamName = (teamRecord.team && typeof teamRecord.team === 'object' && teamRecord.team.name) ? teamRecord.team.name : (typeof teamRecord.team === 'string' ? teamRecord.team : "Unknown Team");
+                        teamObj.team = { name: currentTeamName };
+                        
                         teamObj.wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
                         teamObj.losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
                         teamObj.winningPercentage = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage) : parseFloat(teamRecord.PCT);
                         
                         // Only add to allTeams if winningPercentage is a valid number and team name is not "Unknown Team"
-                        if (teamObj.team.name !== "Unknown Team" && !isNaN(teamObj.winningPercentage)) {
+                        if (currentTeamName !== "Unknown Team" && !isNaN(teamObj.winningPercentage)) {
                              allTeams.push(teamObj);
                         }
                     });
+                    console.log(`All teams array after processing ${divisionName}:`, allTeams); // Log allTeams array building
 
                     // Custom sort: Mets first, then by winning percentage, then alphabetically
                     dataToDisplay.sort((a, b) => {
-                        const teamA = (a.team && typeof a.team === 'object' ? a.team.name : a.team) || "";
-                        const teamB = (b.team && typeof b.team === 'object' ? b.team.name : b.team) || "";
+                        const teamA = (a.team && typeof a.team === 'object' && a.team.name) ? a.team.name : (typeof a.team === 'string' ? a.team : "");
+                        const teamB = (b.team && typeof b.team === 'object' && b.team.name) ? b.team.name : (typeof b.team === 'string' ? b.team : "");
 
                         if (teamA === "New York Mets" && teamB !== "New York Mets") return -1;
                         if (teamB === "New York Mets" && teamA !== "New York Mets") return 1;
@@ -683,10 +687,10 @@
                         dataToDisplay.forEach(teamRecord => {
                             const row = tableBody.insertRow();
                             // Safely access properties for both API and mock data structures
-                            const teamName = (teamRecord.team && typeof teamRecord.team === 'object' ? teamRecord.team.name : teamRecord.team) || teamRecord.team || "Unknown Team";
+                            const teamName = (teamRecord.team && typeof teamRecord.team === 'object' && teamRecord.team.name) ? teamRecord.team.name : (typeof teamRecord.team === 'string' ? teamRecord.team : "Unknown Team");
                             const wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
                             const losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
-                            const pct = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage).toFixed(3) : teamRecord.PCT;
+                            const pct = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage).toFixed(3) : (typeof teamRecord.PCT === 'string' ? teamRecord.PCT : '--');
                             const gb = teamRecord.gamesBack !== undefined ? teamRecord.gamesBack : teamRecord.GB;
                             const streak = teamRecord.streak ? (teamRecord.streak.streakCode || '--') : teamRecord.STRK; 
                             const lastTen = teamRecord.lastTenGames || teamRecord.L10 || '--'; 
@@ -728,13 +732,16 @@
                 top5TeamsTableBody.innerHTML = ''; // Clear existing rows
 
                 // Filter out teams with no valid winning percentage and sort for top 5
-                const teamsWithValidPct = allTeams.filter(team => !isNaN(parseFloat(team.winningPercentage)));
+                // console.log("All teams before final filter/sort for Top 5:", allTeams); // Debugging
+                const teamsWithValidPct = allTeams.filter(team => team.winningPercentage !== undefined && team.winningPercentage !== null && !isNaN(parseFloat(team.winningPercentage)));
+                // console.log("Teams with valid PCT for Top 5:", teamsWithValidPct); // Debugging
 
                 teamsWithValidPct.sort((a, b) => {
                     return (parseFloat(b.winningPercentage) || 0) - (parseFloat(a.winningPercentage) || 0);
                 });
 
                 const top5Teams = teamsWithValidPct.slice(0, 5);
+                // console.log("Final Top 5 Teams:", top5Teams); // Debugging
 
                 if (top5Teams.length > 0) {
                     top5Teams.forEach((team, index) => {
