@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New York Mets Fan Hub</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -17,15 +17,7 @@
             margin: auto;
             padding: 1.5rem;
         }
-        .header {
-            background-color: #002D72; /* Mets Blue */
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-            border-radius: 0.75rem; /* Rounded corners */
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+        /* Removed .header style as the element is being removed */
         .section-title {
             color: #FF5910; /* Mets Orange */
             font-size: 1.875rem; /* text-3xl */
@@ -95,18 +87,19 @@
             font-weight: normal;
             color: #ccc;
         }
-        .series-navigation button {
+        .series-navigation button, .load-more-btn {
             background-color: #002D72;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             font-weight: bold;
             transition: background-color 0.2s ease;
+            cursor: pointer;
         }
-        .series-navigation button:hover:not(:disabled) {
+        .series-navigation button:hover:not(:disabled), .load-more-btn:hover:not(:disabled) {
             background-color: #FF5910;
         }
-        .series-navigation button:disabled {
+        .series-navigation button:disabled, .load-more-btn:disabled {
             background-color: #333;
             cursor: not-allowed;
             opacity: 0.6;
@@ -115,18 +108,13 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1 class="text-4xl font-extrabold mb-2">New York Mets Fan Hub</h1>
-            <p class="text-xl">Your ultimate source for Mets scores, schedules, and standings!</p>
-        </header>
+        <!-- Removed Header as requested -->
 
         <!-- Current Score Section -->
         <section class="card">
             <h2 class="section-title">Current Game Score</h2>
             <div id="current-score" class="score-card">
                 <div class="score-team">
-                    <!-- Removed image tags as requested -->
                     <span id="home-team-name">New York Mets</span>
                     <br>
                     <span id="home-team-score">--</span>
@@ -134,7 +122,6 @@
                 </div>
                 <div class="score-divider">-</div>
                 <div class="score-team">
-                    <!-- Removed image tags as requested -->
                     <span id="away-team-name">Opponent</span>
                     <br>
                     <span id="away-team-score">--</span>
@@ -142,7 +129,7 @@
                 </div>
             </div>
             <p id="game-status" class="game-status">Loading live game status...</p>
-             <p id="game-detail" class="game-status text-base"></p> <!-- For outs/bases if available -->
+            <p id="game-detail" class="game-status text-base"></p> <!-- For outs/bases if available -->
         </section>
 
         <!-- Upcoming Series Section -->
@@ -178,6 +165,9 @@
                         <!-- Past games will be populated here by JavaScript -->
                     </tbody>
                 </table>
+            </div>
+            <div class="flex justify-center mt-4">
+                <button id="load-more-past-games" class="load-more-btn">Load 5 More Games</button>
             </div>
         </section>
 
@@ -254,6 +244,51 @@
 
             let upcomingSeries = [];
             let currentSeriesIndex = 0;
+            let allPastGames = []; // To store all fetched past games
+            let displayedPastGamesCount = 0;
+            const GAMES_PER_LOAD = 5;
+
+            // Mock Data for Fallback (re-added for robustness)
+            const mockUpcomingGames = [
+                { date: "Sun, Jun 15, 2025", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
+                { date: "Tue, Jun 17, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
+                { date: "Wed, Jun 18, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
+            ];
+
+            const mockPastGames = [
+                { date: "Fri, Jun 13, 2025", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L" },
+                { date: "Thu, Jun 12, 2025", opponent: "Washington Nationals", score: "4 - 3", result: "W" },
+                { date: "Wed, Jun 11, 2025", opponent: "Washington Nationals", score: "5 - 0", result: "W" },
+                { date: "Tue, Jun 10, 2025", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)" },
+                { date: "Sun, Jun 8, 2025", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W" },
+                { date: "Sat, Jun 7, 2025", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W" },
+                { date: "Fri, Jun 6, 2025", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L" },
+            ];
+
+            const mockNLEastStandings = [
+                { team: "New York Mets", W: 45, L: 25, PCT: ".643", GB: "-", STRK: "L1", L10: "7-3" },
+                { team: "Philadelphia Phillies", W: 40, L: 29, PCT: ".580", GB: "4.5", STRK: "W2", L10: "4-6" },
+                { team: "Atlanta Braves", W: 30, L: 38, PCT: ".441", GB: "14.0", STRK: "W2", L10: "3-7" },
+                { team: "Washington Nationals", W: 30, L: 39, PCT: ".435", GB: "14.5", STRK: "L6", L10: "2-8" },
+                { team: "Miami Marlins", W: 26, L: 41, PCT: ".388", GB: "17.5", STRK: "W1", L10: "3-7" },
+            ];
+
+            const mockALEastStandings = [
+                { team: "New York Yankees", W: 42, L: 26, PCT: ".618", GB: "-", STRK: "L1", L10: "6-4" },
+                { team: "Toronto Blue Jays", W: 38, L: 31, PCT: ".551", GB: "4.5", STRK: "L1", L10: "7-3" },
+                { team: "Tampa Bay Rays", W: 37, L: 32, PCT: ".536", GB: "5.5", STRK: "W1", L10: "7-3" },
+                { team: "Boston Red Sox", W: 35, L: 36, PCT: ".493", GB: "8.5", STRK: "W3", L10: "6-4" },
+                { team: "Baltimore Orioles", W: 28, L: 40, PCT: ".412", GB: "14.0", STRK: "W1", L10: "6-4" },
+            ];
+
+            const mockNLCentralStandings = [
+                { team: "Chicago Cubs", W: 42, L: 28, PCT: ".600", GB: "-", STRK: "L1", L10: "4-6" },
+                { team: "Milwaukee Brewers", W: 38, L: 33, PCT: ".535", GB: "4.5", STRK: "W2", L10: "5-5" },
+                { team: "St. Louis Cardinals", W: 36, L: 34, PCT: ".514", GB: "6.0", STRK: "L6", L10: "3-7" },
+                { team: "Cincinnati Reds", W: 35, L: 35, PCT: ".500", GB: "7.0", STRK: "L2", L10: "6-4" },
+                { team: "Pittsburgh Pirates", W: 29, L: 42, PCT: ".408", GB: "13.5", STRK: "W1", L10: "7-3" },
+            ];
+
 
             // Helper to fetch data from MLB Stats API
             async function fetchData(path, params = {}) {
@@ -304,7 +339,6 @@
                 const awayTeamPitcher = document.getElementById('away-team-pitcher');
                 const gameDetail = document.getElementById('game-detail');
 
-
                 gameStatus.textContent = "Loading live game status...";
                 homeTeamPitcher.textContent = "";
                 awayTeamPitcher.textContent = "";
@@ -316,17 +350,18 @@
                 const day = String(today.getDate()).padStart(2, '0');
                 const formattedDate = `${year}-${month}-${day}`;
 
+                // Request probablePitcher for initial load, if game is Live (I) or Pre-Game (P)
                 const scheduleData = await fetchData('/schedule', {
                     date: formattedDate,
                     sportId: 1, // MLB
-                    hydrate: 'probablePitcher' // Request probable pitcher info
+                    hydrate: 'probablePitcher' 
                 });
 
                 if (scheduleData && scheduleData.dates && scheduleData.dates.length > 0) {
                     const gamesToday = scheduleData.dates[0].games;
                     const metsGame = gamesToday.find(game => 
                         (game.teams.home.team.id === METS_TEAM_ID || game.teams.away.team.id === METS_TEAM_ID) &&
-                        (game.status.codedGameState === "I" || game.status.codedGameState === "P" || game.status.codedGameState === "D") // I: In Progress, P: Pre-Game, D: Delayed
+                        (game.status.codedGameState === "I" || game.status.codedGameState === "P" || game.status.codedGameState === "D") 
                     );
 
                     if (metsGame) {
@@ -336,26 +371,38 @@
                         awayTeamScore.textContent = metsGame.teams.away.score !== undefined ? metsGame.teams.away.score : "--";
                         
                         let currentStatus = metsGame.status.detailedState;
-                        if (metsGame.status.codedGameState === "I" && metsGame.inningInfo) {
-                            currentStatus = `${metsGame.inningInfo.inningHalf} ${metsGame.inningInfo.currentInning}${getOrdinalSuffix(metsGame.inningInfo.currentInning)}`;
-                            gameDetail.textContent = `${metsGame.inningInfo.halfInningOuts || 0} outs`; // MLB API doesn't usually expose detailed bases for this endpoint.
+                        let gameDetailsText = '';
+
+                        if (metsGame.status.codedGameState === "I") {
+                            // In-progress game
+                            currentStatus = `${metsGame.inningInfo?.inningHalf || ''} ${metsGame.inningInfo?.currentInning || ''}${getOrdinalSuffix(metsGame.inningInfo?.currentInning)}`;
+                            
+                            // To get outs and bases, we need a separate call to the live feed endpoint,
+                            // which is usually rate-limited or requires deeper access.
+                            // For simplicity and avoiding rate limits on public API, we'll indicate if it's available.
+                            // The `schedule` endpoint doesn't typically provide this level of detail.
+                             gameDetailsText = `(Detailed pitch/base info may require a different API endpoint)`;
+
+
                         } else if (metsGame.status.codedGameState === "P" || metsGame.status.codedGameState === "S") {
-                            // For scheduled/pre-game, show start time
+                            // Pre-Game or Scheduled
                             const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                             currentStatus = `Scheduled: ${gameTime}`;
                         } else if (metsGame.status.codedGameState === "F" || metsGame.status.codedGameState === "O") {
-                            currentStatus = "Final"; // Game is over
+                            // Final or Completed
+                            currentStatus = "Final"; 
                         }
 
                         gameStatus.textContent = currentStatus;
+                        gameDetail.textContent = gameDetailsText;
 
                         // Probable Pitchers
                         if (metsGame.probablePitchers) {
-                            homeTeamPitcher.textContent = `P: ${metsGame.probablePitchers.home.fullName || 'TBD'}`;
-                            awayTeamPitcher.textContent = `P: ${metsGame.probablePitchers.away.fullName || 'TBD'}`;
+                            homeTeamPitcher.textContent = `P: ${metsGame.probablePitchers.home?.fullName || 'TBD'}`;
+                            awayTeamPitcher.textContent = `P: ${metsGame.probablePitchers.away?.fullName || 'TBD'}`;
                         } else {
-                            homeTeamPitcher.textContent = 'P: TBD';
-                            awayTeamPitcher.textContent = 'P: TBD';
+                            homeTeamPitcher.textContent = ''; // Removed if not available
+                            awayTeamPitcher.textContent = ''; // Removed if not available
                         }
 
                     } else {
@@ -385,7 +432,7 @@
                 const today = new Date();
                 const year = today.getFullYear();
                 const futureDate = new Date();
-                futureDate.setDate(today.getDate() + 60); // Get games for the next 60 days to group into series
+                futureDate.setDate(today.getDate() + 90); // Look ahead 90 days for series
 
                 const formattedToday = `${year}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                 const formattedFutureDate = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}-${String(futureDate.getDate()).padStart(2, '0')}`;
@@ -405,17 +452,23 @@
                             (game.teams.home.team.id === METS_TEAM_ID || game.teams.away.team.id === METS_TEAM_ID) &&
                             (game.status.codedGameState === "S" || game.status.codedGameState === "P" || game.status.codedGameState === "D") // Scheduled, Pre-Game, Delayed
                         )
-                    );
+                    ).sort((a, b) => new Date(a.gameDate) - new Date(b.gameDate)); // Ensure sorted by date
+
 
                     // Group games into series
                     let currentSeries = null;
                     allMetsGames.forEach(game => {
                         const opponent = game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team : game.teams.home.team;
-                        const location = game.venue.name;
+                        const location = (game.venue && game.venue.name) || "Unknown Venue";
                         const gameDate = new Date(game.gameDate);
 
-                        if (!currentSeries || currentSeries.opponent.id !== opponent.id || currentSeries.location !== location || (gameDate - currentSeries.lastGameDate) / (1000 * 60 * 60 * 24) > 2) {
-                            // Start new series if different opponent, location, or a gap of more than 2 days
+                        // Define series break conditions:
+                        // 1. New opponent
+                        // 2. Different location (home vs away series)
+                        // 3. More than 2 days gap between games in the same series
+                        if (!currentSeries || currentSeries.opponent.id !== opponent.id || currentSeries.location !== location || 
+                            (gameDate - currentSeries.lastGameDate) / (1000 * 60 * 60 * 24) > 2) {
+                            
                             currentSeries = {
                                 opponent: opponent,
                                 location: location,
@@ -425,7 +478,6 @@
                             };
                             upcomingSeries.push(currentSeries);
                         } else {
-                            // Add to current series
                             currentSeries.games.push(game);
                             currentSeries.lastGameDate = gameDate;
                         }
@@ -450,7 +502,6 @@
                     const endDateFormatted = new Date(series.lastGameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     
                     let opponentName = series.opponent.name;
-                    // If the first game of the series is an away game for the Mets
                     if (series.games[0] && series.games[0].teams.home.team.id !== METS_TEAM_ID) {
                         opponentName = `@ ${opponentName}`;
                     }
@@ -493,22 +544,19 @@
 
             // Function to populate past games tables using MLB Stats API
             async function populatePastGames() {
-                const tableBody = document.querySelector(`#past-games-table tbody`);
-                tableBody.innerHTML = ''; 
-
                 const today = new Date();
                 const year = today.getFullYear();
                 
+                // Fetch games for a longer period initially to allow "load more"
                 const pastDate = new Date();
-                pastDate.setDate(today.getDate() - 30); // Look back 30 days for past games
+                pastDate.setDate(today.getDate() - 90); // Look back 90 days
 
                 const formattedPastDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
                 const formattedToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-
                 const scheduleData = await fetchData('/schedule', {
                     startDate: formattedPastDate,
-                    endDate: formattedToday, // Up to today
+                    endDate: formattedToday, 
                     teamId: METS_TEAM_ID,
                     sportId: 1, // MLB
                 });
@@ -523,16 +571,30 @@
                     );
                 }
 
-                const gamesToDisplay = (gamesFromApi && gamesFromApi.length > 0) ? gamesFromApi : mockPastGames;
+                // Sort all fetched past games by date descending (most recent first)
+                gamesFromApi.sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
+                allPastGames = gamesFromApi.length > 0 ? gamesFromApi : mockPastGames.sort((a, b) => new Date(b.date) - new Date(a.date)); // Fallback & sort mock
 
-                if (gamesToDisplay && gamesToDisplay.length > 0) {
-                    // Sort in descending order to show most recent at the top
-                    gamesToDisplay.sort((a, b) => new Date(b.gameDate || b.date) - new Date(a.gameDate || a.date)); 
-                    
-                    gamesToDisplay.forEach(game => {
+                displayedPastGamesCount = 0; // Reset count
+                renderPastGames(); // Initial render of first 5 games
+            }
+
+            function renderPastGames() {
+                const tableBody = document.querySelector(`#past-games-table tbody`);
+                const loadMoreBtn = document.getElementById('load-more-past-games');
+                
+                // Clear only if this is the initial render, otherwise append
+                if (displayedPastGamesCount === 0) {
+                    tableBody.innerHTML = ''; 
+                }
+
+                const gamesToRender = allPastGames.slice(displayedPastGamesCount, displayedPastGamesCount + GAMES_PER_LOAD);
+
+                if (gamesToRender.length > 0) {
+                    gamesToRender.forEach(game => {
                         const row = tableBody.insertRow();
                         
-                        const isApiData = game.gamePk !== undefined; // Check if it's API data
+                        const isApiData = game.gamePk !== undefined; 
 
                         let gameDate, opponentName, metsScore, opponentScore, result;
 
@@ -558,14 +620,21 @@
                         row.insertCell().textContent = `${metsScore || '--'} - ${opponentScore || '--'}`;
                         row.insertCell().textContent = result;
                     });
-                } else {
+                    displayedPastGamesCount += gamesToRender.length;
+                } else if (displayedPastGamesCount === 0) { // Only show message if no games loaded initially
                     const row = tableBody.insertRow();
                     const cell = row.insertCell();
                     cell.colSpan = 4;
                     cell.textContent = `No past games found or data unavailable from MLB Stats API.`;
                     cell.className = "text-center py-4";
                 }
+
+                loadMoreBtn.disabled = displayedPastGamesCount >= allPastGames.length;
+                loadMoreBtn.style.display = allPastGames.length > GAMES_PER_LOAD ? 'block' : 'none'; // Only show if more games exist
             }
+
+            document.getElementById('load-more-past-games').addEventListener('click', renderPastGames);
+
 
             // Function to populate standings tables using MLB Stats API
             async function populateStandings() {
@@ -595,32 +664,39 @@
                 const populateSingleStandingsTable = (tableBody, apiRecords, mockData, divisionName, divisionId) => {
                     let dataToDisplay = [];
                     // Find the specific division's data from the API response
-                    const divisionApiData = apiRecords ? apiRecords.find(record => record.division.id === divisionId)?.teamRecords : null;
+                    const divisionApiData = apiRecords ? apiRecords.records.find(record => record.division.id === divisionId)?.teamRecords : null;
 
                     if (divisionApiData && divisionApiData.length > 0) {
                         dataToDisplay = divisionApiData;
-                        dataToDisplay.sort((a, b) => a.team.name.localeCompare(b.team.name)); // Sort alphabetically
+                        dataToDisplay.sort((a, b) => {
+                             // Sort by winning percentage descending, then alphabetically by team name
+                            if (a.winningPercentage !== b.winningPercentage) {
+                                return (parseFloat(b.winningPercentage) || 0) - (parseFloat(a.winningPercentage) || 0);
+                            }
+                            return a.team.name.localeCompare(b.team.name);
+                        });
                     } else {
                         dataToDisplay = mockData; // Fallback to mock data
+                        // Sort mock data by PCT descending
+                        dataToDisplay.sort((a,b) => (parseFloat(b.PCT) || 0) - (parseFloat(a.PCT) || 0));
                     }
 
                     if (dataToDisplay && dataToDisplay.length > 0) {
                         dataToDisplay.forEach(teamRecord => {
                             const row = tableBody.insertRow();
-                            // API data structure vs Mock data structure
                             const teamName = teamRecord.team ? (teamRecord.team.name || "Unknown Team") : (teamRecord.team || "Unknown Team");
                             const wins = teamRecord.wins !== undefined ? teamRecord.wins : teamRecord.W;
                             const losses = teamRecord.losses !== undefined ? teamRecord.losses : teamRecord.L;
                             const pct = teamRecord.winningPercentage !== undefined ? parseFloat(teamRecord.winningPercentage).toFixed(3) : teamRecord.PCT;
                             const gb = teamRecord.gamesBack !== undefined ? teamRecord.gamesBack : teamRecord.GB;
-                            const streak = teamRecord.streak ? (teamRecord.streak.streakCode || '--') : teamRecord.STRK; // e.g., W3, L2
-                            const lastTen = teamRecord.lastTenGames || teamRecord.L10 || '--'; // MLB API v1 standings doesn't usually provide L10 directly; it might need calculation or different endpoint
+                            const streak = teamRecord.streak ? (teamRecord.streak.streakCode || '--') : teamRecord.STRK; 
+                            const lastTen = teamRecord.lastTenGames || teamRecord.L10 || '--'; 
 
                             row.insertCell().textContent = teamName;
                             row.insertCell().textContent = wins || '--';
                             row.insertCell().textContent = losses || '--';
                             row.insertCell().textContent = pct || '--';
-                            row.insertCell().textContent = gb !== null ? gb : '-'; // Games Back can be 0 or '-'
+                            row.insertCell().textContent = gb !== null ? gb : '-'; 
                             row.insertCell().textContent = streak;
                             row.insertCell().textContent = lastTen;
                         });
@@ -634,24 +710,23 @@
                 };
                 
                 // Populate NL East
-                populateSingleStandingsTable(nlEastTableBody, nlStandingsData ? nlStandingsData.records : null, mockNLEastStandings, "NL East", 203);
+                populateSingleStandingsTable(nlEastTableBody, nlStandingsData, mockNLEastStandings, "NL East", 203);
                 // Populate AL East
-                populateSingleStandingsTable(alEastTableBody, alStandingsData ? alStandingsData.records : null, mockALEastStandings, "AL East", 201);
+                populateSingleStandingsTable(alEastTableBody, alStandingsData, mockALEastStandings, "AL East", 201);
                 // Populate NL Central
-                populateSingleStandingsTable(nlCentralTableBody, nlStandingsData ? nlStandingsData.records : null, mockNLCentralStandings, "NL Central", 204);
+                populateSingleStandingsTable(nlCentralTableBody, nlStandingsData, mockNLCentralStandings, "NL Central", 204);
             }
 
 
             async function initializeApp() {
                 await updateCurrentScore();
-                await populateUpcomingSeries(); // Call the new function for series
-                await populatePastGames(); // Renamed from populateGames('past')
+                await populateUpcomingSeries(); 
+                await populatePastGames(); 
                 await populateStandings();
             }
 
             initializeApp();
 
-            // Refresh data every 5 minutes (adjust as needed)
             setInterval(initializeApp, 5 * 60 * 1000);
         });
     </script>
