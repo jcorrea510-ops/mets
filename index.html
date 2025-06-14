@@ -279,7 +279,8 @@
                     if (!response.ok) {
                         // Log the error response from the API for debugging
                         const errorText = await response.text();
-                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        console.error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        return null; // Return null on error
                     }
                     const data = await response.json();
                     if (data.results === 0) {
@@ -319,23 +320,27 @@
 
                 if (games && games.length > 0) {
                     const metsGame = games.find(game =>
-                        (game.teams.home.name === "New York Mets" || game.teams.away.name === "New York Mets") &&
-                        (game.status.short === "In Progress" || game.status.short === "Delayed" || game.status.short === "Suspended" || game.status.short === "1st" || game.status.short === "2nd" || game.status.short === "3rd" || game.status.short === "4th" || game.status.short === "5th" || game.status.short === "6th" || game.status.short === "7th" || game.status.short === "8th" || game.status.short === "9th" || game.status.short === "Extra Inning")
+                        (game.teams.home.id === METS_TEAM_ID || game.teams.away.id === METS_TEAM_ID) &&
+                        (game.status.short === "In Progress" || game.status.short === "Delayed" || game.status.short === "Suspended" || (game.status.short >= "1st" && game.status.short <= "9th") || game.status.short === "Extra Inning")
                     );
 
                     if (metsGame) {
-                        homeTeamName.textContent = metsGame.teams.home.name;
-                        awayTeamName.textContent = metsGame.teams.away.name;
+                        homeTeamName.textContent = metsGame.teams.home.name || "Unknown";
+                        awayTeamName.textContent = metsGame.teams.away.name || "Unknown";
                         homeTeamScore.textContent = metsGame.scores.home.total !== null ? metsGame.scores.home.total : "--";
                         awayTeamScore.textContent = metsGame.scores.away.total !== null ? metsGame.scores.away.total : "--";
                         gameStatus.textContent = `Live: ${metsGame.status.long || 'In Progress'} - ${metsGame.status.comments || ''}`;
                     } else {
                         gameStatus.textContent = "No live Mets game currently.";
+                        homeTeamName.textContent = "New York Mets";
+                        awayTeamName.textContent = "Opponent";
                         homeTeamScore.textContent = "--";
                         awayTeamScore.textContent = "--";
                     }
                 } else {
                     gameStatus.textContent = "No games scheduled for today or data unavailable.";
+                    homeTeamName.textContent = "New York Mets";
+                    awayTeamName.textContent = "Opponent";
                     homeTeamScore.textContent = "--";
                     awayTeamScore.textContent = "--";
                 }
@@ -403,12 +408,12 @@
                         if (type === 'upcoming') {
                             row.insertCell().textContent = gameDate;
                             row.insertCell().textContent = gameTime;
-                            row.insertCell().textContent = game.teams.home.id === METS_TEAM_ID ? game.teams.away.name : `@ ${game.teams.home.name}`;
-                            row.insertCell().textContent = game.venue.name;
+                            row.insertCell().textContent = game.teams.home.id === METS_TEAM_ID ? (game.teams.away.name || "Unknown Opponent") : `@ ${game.teams.home.name || "Unknown Opponent"}`;
+                            row.insertCell().textContent = game.venue.name || "Unknown Venue";
                         } else if (type === 'past') {
                             row.insertCell().textContent = gameDate;
                             // Determine opponent correctly for past games
-                            const opponentName = game.teams.home.id === METS_TEAM_ID ? game.teams.away.name : game.teams.home.name;
+                            const opponentName = game.teams.home.id === METS_TEAM_ID ? (game.teams.away.name || "Unknown Opponent") : (game.teams.home.name || "Unknown Opponent");
                             row.insertCell().textContent = opponentName;
                             
                             // Ensure scores are displayed correctly regardless of home/away for Mets
@@ -467,13 +472,13 @@
 
                             division.standings.forEach(team => {
                                 const row = targetTableBody.insertRow();
-                                row.insertCell().textContent = team.team.name;
-                                row.insertCell().textContent = team.games.win.total;
-                                row.insertCell().textContent = team.games.lose.total;
+                                row.insertCell().textContent = team.team.name || "Unknown Team";
+                                row.insertCell().textContent = team.games.win.total || '--';
+                                row.insertCell().textContent = team.games.lose.total || '--';
                                 row.insertCell().textContent = team.percentage.wins !== null ? team.percentage.wins.toFixed(3) : '--';
                                 row.insertCell().textContent = team.gamesBehind !== null ? team.gamesBehind : '-';
                                 // Handle streak data
-                                const streakText = team.streak.type === 'wins' ? `W${team.streak.total}` : (team.streak.type === 'losses' ? `L${team.streak.total}` : '--');
+                                const streakText = team.streak.type === 'wins' ? `W${team.streak.total || 0}` : (team.streak.type === 'losses' ? `L${team.streak.total || 0}` : '--');
                                 row.insertCell().textContent = streakText;
                                 // Handle L10 form data
                                 const formL10 = team.form && team.form.split('-').length === 2 ? `${team.form.split('-')[0]}-${team.form.split('-')[1]}` : '--';
