@@ -61,7 +61,8 @@
             font-size: 2.25rem; /* text-4xl */
             font-weight: 800; /* font-extrabold */
             padding: 2rem;
-            background: linear-gradient(135deg, #002D72, #FF5910); /* Gradient background */
+            /* Removed gradient, now solid background */
+            background-color: #002D72; /* Solid Mets Blue */ 
             color: white;
             border-radius: 0.75rem;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -81,11 +82,7 @@
             text-align: center;
             color: #e0e0e0;
         }
-        .team-info {
-            font-size: 1rem;
-            font-weight: normal;
-            color: #ccc;
-        }
+        /* Removed .team-info as pitcher text is removed */
         .series-navigation button, .load-more-btn {
             background-color: #002D72;
             color: white;
@@ -104,8 +101,9 @@
             opacity: 0.6;
         }
         .mets-highlight {
-            background-color: #004d9c; /* A slightly lighter Mets blue for highlighting */
+            background-color: #004d9c !important; /* Slightly lighter Mets blue for highlighting, using !important for override */
             font-weight: bold;
+            color: white;
         }
         .top-teams-table th, .top-teams-table td {
             text-align: center;
@@ -213,7 +211,7 @@
             let displayedPastGamesCount = 0;
             const GAMES_PER_LOAD = 5;
 
-            // Mock Data for Fallback (re-added for robustness)
+            // Mock Data for Fallback 
             const mockUpcomingGames = [
                 { date: "Sun, Jun 15, 2025", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
                 { date: "Tue, Jun 17, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
@@ -253,6 +251,30 @@
                 { team: "Cincinnati Reds", W: 35, L: 35, PCT: ".500", GB: "7.0", STRK: "L2", L10: "6-4" },
                 { team: "Pittsburgh Pirates", W: 29, L: 42, PCT: ".408", GB: "13.5", STRK: "W1", L10: "7-3" },
             ];
+            
+            const mockALCentralStandings = [
+                { team: "Cleveland Guardians", W: 40, L: 29, PCT: ".580", GB: "-", STRK: "W3", L10: "7-3" },
+                { team: "Minnesota Twins", W: 35, L: 34, PCT: ".507", GB: "5.0", STRK: "L1", L10: "6-4" },
+                { team: "Kansas City Royals", W: 30, L: 39, PCT: ".435", GB: "10.0", STRK: "L2", L10: "4-6" },
+                { team: "Detroit Tigers", W: 28, L: 41, PCT: ".406", GB: "12.0", STRK: "L3", L10: "3-7" },
+                { team: "Chicago White Sox", W: 20, L: 49, PCT: ".290", GB: "20.0", STRK: "L10", L10: "0-10" },
+            ];
+
+            const mockNLWestStandings = [
+                { team: "Los Angeles Dodgers", W: 50, L: 20, PCT: ".714", GB: "-", STRK: "W5", L10: "8-2" },
+                { team: "San Diego Padres", W: 40, L: 30, PCT: ".571", GB: "10.0", STRK: "L1", L10: "5-5" },
+                { team: "Arizona Diamondbacks", W: 35, L: 35, PCT: ".500", GB: "15.0", STRK: "W2", L10: "6-4" },
+                { team: "San Francisco Giants", W: 30, L: 40, PCT: ".429", GB: "20.0", STRK: "L3", L10: "4-6" },
+                { team: "Colorado Rockies", W: 20, L: 50, PCT: ".286", GB: "30.0", STRK: "L1", L10: "2-8" },
+            ];
+
+            const mockALWestStandings = [
+                { team: "Houston Astros", W: 48, L: 22, PCT: ".686", GB: "-", STRK: "W4", L10: "9-1" },
+                { team: "Texas Rangers", W: 38, L: 32, PCT: ".543", GB: "10.0", STRK: "L2", L10: "6-4" },
+                { team: "Seattle Mariners", W: 35, L: 35, PCT: ".500", GB: "13.0", STRK: "W1", L10: "5-5" },
+                { team: "Los Angeles Angels", W: 30, L: 40, PCT: ".429", GB: "18.0", STRK: "L5", L10: "2-8" },
+                { team: "Oakland Athletics", W: 25, L: 45, PCT: ".357", GB: "23.0", STRK: "W1", L10: "3-7" },
+            ];
 
 
             // Helper to fetch data from MLB Stats API
@@ -284,15 +306,6 @@
                 }
             }
 
-            // Helper for ordinal suffixes (1st, 2nd, 3rd, etc.)
-            function getOrdinalSuffix(i) {
-                const j = i % 10, k = i % 100;
-                if (j === 1 && k !== 11) return "st";
-                if (j === 2 && k !== 12) return "nd";
-                if (j === 3 && k !== 13) return "rd";
-                return "th";
-            }
-
             // Function to update current game score using MLB Stats API
             async function updateCurrentScore() {
                 const homeTeamName = document.getElementById('home-team-name');
@@ -300,7 +313,6 @@
                 const homeTeamScore = document.getElementById('home-team-score');
                 const awayTeamScore = document.getElementById('away-team-score');
                 const gameStatus = document.getElementById('game-status');
-                // Removed pitcher and game detail elements
                 
                 gameStatus.textContent = "Loading live game status...";
 
@@ -331,7 +343,8 @@
                         let currentStatus = metsGame.status.detailedState;
 
                         if (metsGame.status.codedGameState === "I") {
-                            currentStatus = `${metsGame.inningInfo?.inningHalf || ''} ${metsGame.inningInfo?.currentInning || ''}${getOrdinalSuffix(metsGame.inningInfo?.currentInning)}`;
+                            // Remove "th" or other suffixes for inning
+                            currentStatus = `${metsGame.inningInfo?.inningHalf || ''} ${metsGame.inningInfo?.currentInning || ''}`;
                         } else if (metsGame.status.codedGameState === "P" || metsGame.status.codedGameState === "S") {
                             const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                             currentStatus = `Scheduled: ${gameTime}`;
@@ -568,12 +581,14 @@
 
             // Function to populate standings tables using MLB Stats API
             async function populateStandings() {
+                // Fetch NL standings (includes NL East, Central, West)
                 const nlStandingsData = await fetchData('/standings', {
                     leagueId: 103, // National League ID
                     season: new Date().getFullYear(),
                     standingsTypes: 'regularSeason'
                 });
                 
+                // Fetch AL standings (includes AL East, Central, West)
                 const alStandingsData = await fetchData('/standings', {
                     leagueId: 104, // American League ID
                     season: new Date().getFullYear(),
@@ -594,17 +609,27 @@
                         dataToDisplay = divisionApiData;
                         // Add to allTeams for top 5 calculation
                         allTeams = allTeams.concat(dataToDisplay);
-
-                        dataToDisplay.sort((a, b) => {
-                            if (a.winningPercentage !== b.winningPercentage) {
-                                return (parseFloat(b.winningPercentage) || 0) - (parseFloat(a.winningPercentage) || 0);
-                            }
-                            return a.team.name.localeCompare(b.team.name);
-                        });
                     } else {
                         dataToDisplay = mockData;
-                        dataToDisplay.sort((a,b) => (parseFloat(b.PCT) || 0) - (parseFloat(a.PCT) || 0));
                     }
+
+                    // Custom sort: Mets first, then by winning percentage, then alphabetically
+                    dataToDisplay.sort((a, b) => {
+                        const teamA = a.team ? a.team.name : a.team;
+                        const teamB = b.team ? b.team.name : b.team;
+
+                        if (teamA === "New York Mets" && teamB !== "New York Mets") return -1;
+                        if (teamB === "New York Mets" && teamA !== "New York Mets") return 1;
+
+                        const pctA = parseFloat(a.winningPercentage || a.PCT || 0);
+                        const pctB = parseFloat(b.winningPercentage || b.PCT || 0);
+
+                        if (pctA !== pctB) {
+                            return pctB - pctA; // Sort by PCT descending
+                        }
+                        return teamA.localeCompare(teamB); // Alphabetical if PCT is same
+                    });
+
 
                     // Create elements for this division
                     const divisionHeader = document.createElement('h3');
@@ -666,29 +691,22 @@
                     }
                 };
                 
-                // Populate all divisions from NL
-                if (nlStandingsData && nlStandingsData.records) {
-                    nlStandingsData.records.forEach(divisionRecord => {
-                        createAndPopulateStandingsTable(nlStandingsData, [], divisionRecord.division.name, divisionRecord.division.id);
-                    });
-                } else {
-                    // Fallback to mock data for specific divisions if NL API data is completely missing
-                    createAndPopulateStandingsTable(null, mockNLEastStandings, "NL East (Fallback)", 203);
-                    createAndPopulateStandingsTable(null, mockNLCentralStandings, "NL Central (Fallback)", 204);
-                    // Add other NL divisions if mock data is available for them
-                }
+                // --- National League Divisions ---
+                // NL East (ID: 203)
+                createAndPopulateStandingsTable(nlStandingsData, mockNLEastStandings, "NL East Standings", 203);
+                // NL Central (ID: 204)
+                createAndPopulateStandingsTable(nlStandingsData, mockNLCentralStandings, "NL Central Standings", 204);
+                // NL West (ID: 205)
+                createAndPopulateStandingsTable(nlStandingsData, mockNLWestStandings, "NL West Standings", 205);
 
-                // Populate all divisions from AL
-                if (alStandingsData && alStandingsData.records) {
-                    alStandingsData.records.forEach(divisionRecord => {
-                        createAndPopulateStandingsTable(alStandingsData, [], divisionRecord.division.name, divisionRecord.division.id);
-                    });
-                } else {
-                    // Fallback to mock data for specific divisions if AL API data is completely missing
-                    createAndPopulateStandingsTable(null, mockALEastStandings, "AL East (Fallback)", 201);
-                    // Add other AL divisions if mock data is available for them
-                }
 
+                // --- American League Divisions ---
+                // AL East (ID: 201)
+                createAndPopulateStandingsTable(alStandingsData, mockALEastStandings, "AL East Standings", 201);
+                // AL Central (ID: 202)
+                createAndPopulateStandingsTable(alStandingsData, mockALCentralStandings, "AL Central Standings", 202);
+                // AL West (ID: 200) - Note: MLB Stats API uses 200 for AL West
+                createAndPopulateStandingsTable(alStandingsData, mockALWestStandings, "AL West Standings", 200);
 
                 // Populate Top 5 Teams
                 const top5TeamsTableBody = document.getElementById('top-5-teams-table').querySelector('tbody');
