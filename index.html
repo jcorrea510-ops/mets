@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New York Mets Fan Hub</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <!-- Tailwind CSS CDN - ENSURE NO BRACKETS AROUND THIS URL -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -133,14 +133,16 @@
             <div id="current-score" class="score-card">
                 <!-- Dynamic content will be loaded here by JavaScript -->
                 <div class="score-team">
-                    <img src="[https://placehold.co/60x60/002D72/FFFFFF?text=NYM](https://placehold.co/60x60/002D72/FFFFFF?text=NYM)" alt="Mets Logo" class="team-logo">
+                    <!-- REMOVED BRACKETS AROUND IMAGE URL -->
+                    <img src="https://placehold.co/60x60/002D72/FFFFFF?text=NYM" alt="Mets Logo" class="team-logo">
                     <span id="home-team-name">New York Mets</span>
                     <br>
                     <span id="home-team-score">--</span>
                 </div>
                 <div class="score-divider">-</div>
                 <div class="score-team">
-                    <img src="[https://placehold.co/60x60/808080/FFFFFF?text=OPP](https://placehold.co/60x60/808080/FFFFFF?text=OPP)" alt="Opponent Logo" class="team-logo">
+                    <!-- REMOVED BRACKETS AROUND IMAGE URL -->
+                    <img src="https://placehold.co/60x60/808080/FFFFFF?text=OPP" alt="Opponent Logo" class="team-logo">
                     <span id="away-team-name">Opponent</span>
                     <br>
                     <span id="away-team-score">--</span>
@@ -259,15 +261,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             const API_KEY = "9920e2c5f46d63b74e44752cc2392422";
             const API_HOST = "v1.baseball.api-sports.io";
-            // The Mets team ID on API-Sports is usually '24'.
-            // If you find that Mets data isn't showing up correctly,
-            // you might need to verify the exact team ID from the API's 'teams' endpoint.
-            const METS_TEAM_ID = "24";
+            const METS_TEAM_ID = "24"; 
 
-            // Helper to fetch data from API-Sports
             async function fetchData(endpoint, params = {}) {
                 const queryString = new URLSearchParams(params).toString();
                 const url = `https://${API_HOST}/${endpoint}?${queryString}`;
+                console.log(`Fetching: ${url}`); // Log the API request URL
                 try {
                     const response = await fetch(url, {
                         method: 'GET',
@@ -277,14 +276,14 @@
                         }
                     });
                     if (!response.ok) {
-                        // Log the error response from the API for debugging
                         const errorText = await response.text();
-                        console.error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                        return null; // Return null on error
+                        console.error(`HTTP error! status: ${response.status}, message: ${errorText} for URL: ${url}`);
+                        return null; 
                     }
                     const data = await response.json();
-                    if (data.results === 0) {
-                        console.warn(`API returned 0 results for ${endpoint} with params:`, params);
+                    console.log(`API response for ${endpoint}:`, data); // Log the full API response
+                    if (data.results === 0 || !data.response || data.response.length === 0) {
+                        console.warn(`API returned 0 results or empty response for ${endpoint} with params:`, params);
                         return [];
                     }
                     return data.response;
@@ -294,7 +293,6 @@
                 }
             }
 
-            // Function to update current game score
             async function updateCurrentScore() {
                 const homeTeamName = document.getElementById('home-team-name');
                 const awayTeamName = document.getElementById('away-team-name');
@@ -310,18 +308,17 @@
                 const day = String(today.getDate()).padStart(2, '0');
                 const formattedDate = `${year}-${month}-${day}`;
 
-                // Try to get live games for today
                 const games = await fetchData('games', {
                     date: formattedDate,
                     timezone: 'America/New_York',
-                    league: '1', // MLB league ID is usually 1 for API-Sports
+                    league: '1', 
                     season: year
                 });
 
                 if (games && games.length > 0) {
                     const metsGame = games.find(game =>
                         (game.teams.home.id === METS_TEAM_ID || game.teams.away.id === METS_TEAM_ID) &&
-                        (game.status.short === "In Progress" || game.status.short === "Delayed" || game.status.short === "Suspended" || (game.status.short >= "1st" && game.status.short <= "9th") || game.status.short === "Extra Inning")
+                        (game.status.short === "In Progress" || game.status.short === "Delayed" || game.status.short === "Suspended" || (game.status.short.match(/^\d+(th|st|nd|rd)$/) || ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'].includes(game.status.short) || game.status.short === "Extra Inning"))
                     );
 
                     if (metsGame) {
@@ -346,19 +343,17 @@
                 }
             }
 
-            // Function to populate games tables
             async function populateGames(type) {
                 const tableBody = document.querySelector(`#${type}-games-table tbody`);
-                tableBody.innerHTML = ''; // Clear existing rows
+                tableBody.innerHTML = ''; 
 
                 const today = new Date();
                 const year = today.getFullYear();
 
                 let games;
                 if (type === 'upcoming') {
-                    // Fetch upcoming games from today onwards for the next 30 days
                     const futureDate = new Date();
-                    futureDate.setDate(today.getDate() + 30); // Get games for the next 30 days
+                    futureDate.setDate(today.getDate() + 30); 
 
                     const formattedToday = `${year}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     const formattedFutureDate = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}-${String(futureDate.getDate()).padStart(2, '0')}`;
@@ -371,13 +366,11 @@
                         to: formattedFutureDate,
                         timezone: 'America/New_York'
                     });
-                    // Filter for games that are not yet started (NS), postponed (PPD), or delayed
                     games = games ? games.filter(game => game.status.short === "NS" || game.status.short === "PPD" || game.status.short === "Delayed") : [];
 
                 } else if (type === 'past') {
-                    // Fetch past games from last 7 days up to yesterday
                     const pastDate = new Date();
-                    pastDate.setDate(today.getDate() - 7); // Get games from last 7 days
+                    pastDate.setDate(today.getDate() - 7); 
 
                     const yesterday = new Date();
                     yesterday.setDate(today.getDate() - 1);
@@ -393,12 +386,11 @@
                         to: formattedYesterday,
                         timezone: 'America/New_York'
                     });
-                    // Filter for finished games (FT)
                     games = games ? games.filter(game => game.status.short === "FT") : [];
                 }
 
                 if (games && games.length > 0) {
-                    games.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date
+                    games.sort((a, b) => new Date(a.date) - new Date(b.date)); 
                     games.forEach(game => {
                         const row = tableBody.insertRow();
                         const gameDateTime = new Date(game.date);
@@ -412,11 +404,9 @@
                             row.insertCell().textContent = game.venue.name || "Unknown Venue";
                         } else if (type === 'past') {
                             row.insertCell().textContent = gameDate;
-                            // Determine opponent correctly for past games
                             const opponentName = game.teams.home.id === METS_TEAM_ID ? (game.teams.away.name || "Unknown Opponent") : (game.teams.home.name || "Unknown Opponent");
                             row.insertCell().textContent = opponentName;
                             
-                            // Ensure scores are displayed correctly regardless of home/away for Mets
                             let metsScore, opponentScore;
                             if (game.teams.home.id === METS_TEAM_ID) {
                                 metsScore = game.scores.home.total;
@@ -427,7 +417,7 @@
                             }
                             row.insertCell().textContent = `${metsScore || '--'} - ${opponentScore || '--'}`;
 
-                            const result = (metsScore > opponentScore) ? 'W' : (metsScore < opponentScore ? 'L' : 'TBD'); // TBD for ties/unfinished
+                            const result = (metsScore > opponentScore) ? 'W' : (metsScore < opponentScore ? 'L' : 'TBD'); 
                             row.insertCell().textContent = result;
                         }
                     });
@@ -440,17 +430,16 @@
                 }
             }
 
-            // Function to populate standings tables
             async function populateStandings() {
                 const standings = await fetchData('standings', {
-                    league: '1', // MLB league ID
+                    league: '1', 
                     season: new Date().getFullYear()
                 });
 
                 if (standings && standings.length > 0) {
                     const nlEastTableBody = document.querySelector('#nl-east-standings-table tbody');
                     const alEastTableBody = document.querySelector('#al-east-standings-table tbody');
-                    const nlCentralTableBody = document.querySelector('#nl-central-standings-table tbody'); // Corrected NL Central tbody
+                    const nlCentralTableBody = document.querySelector('#nl-central-standings-table tbody'); 
 
                     nlEastTableBody.innerHTML = '';
                     alEastTableBody.innerHTML = '';
@@ -467,7 +456,6 @@
                         }
 
                         if (targetTableBody) {
-                            // Sort teams by rank within their division
                             division.standings.sort((a, b) => a.rank - b.rank);
 
                             division.standings.forEach(team => {
@@ -477,10 +465,8 @@
                                 row.insertCell().textContent = team.games.lose.total || '--';
                                 row.insertCell().textContent = team.percentage.wins !== null ? team.percentage.wins.toFixed(3) : '--';
                                 row.insertCell().textContent = team.gamesBehind !== null ? team.gamesBehind : '-';
-                                // Handle streak data
                                 const streakText = team.streak.type === 'wins' ? `W${team.streak.total || 0}` : (team.streak.type === 'losses' ? `L${team.streak.total || 0}` : '--');
                                 row.insertCell().textContent = streakText;
-                                // Handle L10 form data
                                 const formL10 = team.form && team.form.split('-').length === 2 ? `${team.form.split('-')[0]}-${team.form.split('-')[1]}` : '--';
                                 row.insertCell().textContent = formL10;
                             });
@@ -493,7 +479,6 @@
                 }
             }
 
-            // Initial data load
             async function initializeApp() {
                 await updateCurrentScore();
                 await populateGames('upcoming');
@@ -503,7 +488,6 @@
 
             initializeApp();
 
-            // Refresh data every 5 minutes (adjust as needed)
             setInterval(initializeApp, 5 * 60 * 1000);
         });
     </script>
