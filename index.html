@@ -102,7 +102,7 @@
             cursor: pointer; /* Indicate clickable rows */
         }
 
-        /* Responsive adjustments for score card (Enhanced Mobile Look) */
+        /* Responsive adjustments for score card */
         .score-card {
             display: flex;
             justify-content: space-between; /* Space between teams */
@@ -169,6 +169,11 @@
                 padding: 0 0.1rem; /* Minimal padding around each team block */
                 flex-basis: calc(50% - 0.5rem); /* Distribute space more evenly, accounting for divider width */
                 min-width: 90px; /* Ensure a good minimum width */
+            }
+            /* Adjust game status font for mobile */
+            .game-status {
+                font-size: 1rem; /* Smaller font for game status on small mobile */
+                margin-top: 1rem; /* Reduce top margin */
             }
         }
 
@@ -260,10 +265,10 @@
 
         /* Past Games Table Column Widths */
         #past-games-table th:nth-child(1), #past-games-table td:nth-child(1) { /* Date */
-            width: 25%;
+            width: 30%; /* Increased width for "Weekday MM/DD" */
         }
         #past-games-table th:nth-child(2), #past-games-table td:nth-child(2) { /* Opponent */
-            width: 40%;
+            width: 35%; /* Adjusted to compensate */
             white-space: normal; /* Allow opponent name to wrap */
             text-overflow: clip; /* No ellipsis needed if wrapping */
         }
@@ -363,7 +368,7 @@
                 { date: "Wed, Jun 18", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
             ];
 
-            // Updated mock data to use "Day MM/DD" format directly
+            // Updated mock data to use "Day MM/DD" format directly for consistency
             const mockPastGames = [
                 { date: "Fri 6/13", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' },
                 { date: "Thu 6/12", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
@@ -442,9 +447,9 @@
                         if (metsGame.status.codedGameState === "I") {
                             // Display inning without ordinal suffix, if available
                             if (metsGame.inningInfo?.currentInning) {
-                                currentStatus = `${metsGame.inningInfo.inningHalf || ''} ${metsGame.inningInfo.currentInning}`;
+                                currentStatus = `Inning: ${metsGame.inningInfo.inningHalf || ''} ${metsGame.inningInfo.currentInning}`;
                             } else {
-                                currentStatus = "In Progress"; // Fallback if inning number isn't there
+                                currentStatus = "Game In Progress"; // Fallback if inning number isn't there
                             }
                         } else if (metsGame.status.codedGameState === "P" || metsGame.status.codedGameState === "S") {
                             const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -652,10 +657,11 @@
 
                         if (isApiData) {
                             const gameDateTime = new Date(game.gameDate);
-                            // New date format: "Day MM/DD" e.g., "Sat 6/15"
-                            const weekday = gameDateTime.toLocaleDateString('en-US', { weekday: 'short' });
-                            const monthDay = gameDateTime.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
-                            gameDate = `${weekday} ${monthDay}`;
+                            // New date format: "Day MM/DD" e.g., "Sat 6/15" to ensure 8 characters if possible
+                            const weekday = gameDateTime.toLocaleDateString('en-US', { weekday: 'short' }); // e.g., "Sat"
+                            const month = (gameDateTime.getMonth() + 1).toString(); // e.g., "6"
+                            const day = gameDateTime.getDate().toString(); // e.g., "15"
+                            gameDate = `${weekday} ${month}/${day}`; // Combines to "Sat 6/15"
 
                             opponentName = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team.name : game.teams.home.team.name) || "Unknown Opponent";
 
