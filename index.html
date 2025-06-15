@@ -105,63 +105,85 @@
         /* Responsive adjustments for score card (Enhanced Mobile Look) */
         .score-card {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between; /* Space between teams */
             align-items: center;
-            font-size: 2rem; /* Larger default for mobile */
+            font-size: 2rem; /* Larger default for mobile, will be overridden */
             font-weight: 800; /* font-extrabold */
-            padding: 1.5rem; /* Adjusted padding for mobile */
+            padding: 1.5rem; /* Adjusted padding for mobile, will be overridden */
             background: linear-gradient(135deg, #002D72 0%, #004d9c 100%); /* Gradient background */
             color: white;
             border-radius: 1rem;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 45, 114, 0.5); /* Enhanced shadow with blue glow */
             margin-bottom: 2rem;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
-            flex-wrap: wrap; /* Allow wrapping on very small screens */
+            flex-wrap: nowrap; /* PREVENT WRAPPING */
         }
         .score-team {
-            flex: 1 1 45%; /* Allow teams to take up almost half space */
+            flex-grow: 1; /* Allow teams to grow to fill space */
+            flex-shrink: 1; /* Allow teams to shrink */
+            flex-basis: 45%; /* A good starting point for width distribution */
             text-align: center;
-            padding: 0.5rem; /* Padding for mobile team blocks */
+            padding: 0 0.5rem; /* Padding for mobile team blocks */
+            min-width: 80px; /* Minimum width to prevent crushing too much */
         }
         .score-team span:first-child { /* Team Name */
-            font-size: 1.25rem; /* text-xl for mobile */
+            font-size: 1.25rem; /* Default for mobile */
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis; /* Truncate long names */
+            display: block; /* Ensures name and score stack cleanly within its own team block */
+            margin-bottom: 0.1rem; /* Tighten spacing between name and score */
         }
         .score-team span:last-child { /* Score */
-            font-size: 3rem; /* text-5xl for mobile scores */
+            font-size: 3rem; /* Default for mobile scores */
             display: block;
-            margin-top: 0.25rem;
             line-height: 1; /* Tighter line height for numbers */
         }
         .score-divider {
+            display: block; /* Default to visible */
             font-size: 3rem; /* Match score size */
             font-weight: 800;
-            margin: 0 0.5rem; /* Keep tight on mobile */
+            margin: 0 0.5rem; /* Reduced margin */
             color: #FF5910; /* Orange divider */
         }
 
-        /* Further adjustments for extremely small mobile screens (e.g., iPhone SE) */
-        @media (max-width: 380px) {
+        /* Mobile specific overrides for screens smaller than 640px */
+        @media (max-width: 639px) {
             .score-card {
                 padding: 0.8rem; /* Even tighter padding */
+                justify-content: space-between; /* Ensure space between elements */
             }
             .score-team span:first-child {
-                font-size: 1.1rem; /* Smaller team name */
+                font-size: 1rem; /* Smaller team name */
             }
             .score-team span:last-child {
-                font-size: 2.6rem; /* Smaller score */
+                font-size: 2.4rem; /* Smaller score */
             }
             .score-divider {
-                font-size: 2.6rem; /* Match smaller score font */
-                margin: 0 0.25rem; /* Even tighter margin */
+                display: none; /* HIDE THE DASH ON MOBILE! */
+            }
+            /* Adjust flex-basis for score teams when dash is hidden, to use full width */
+            .score-team {
+                flex-basis: 48%; /* Try to get them to split evenly */
+                padding: 0 0.1rem; /* Even less padding */
             }
         }
 
+        /* Further adjustments for extremely small mobile screens (e.g., iPhone SE/smaller iPhones) */
+        @media (max-width: 380px) {
+            .score-team span:first-child {
+                font-size: 0.85rem; /* Even smaller team name */
+            }
+            .score-team span:last-child {
+                font-size: 2.1rem; /* Even smaller score */
+            }
+            .score-team {
+                 padding: 0 0; /* No horizontal padding on smallest screens */
+            }
+        }
 
-        @media (min-width: 640px) { /* sm breakpoint and up */
+        @media (min-width: 640px) { /* sm breakpoint and up - Desktop styles */
             .score-card {
                 font-size: 2.5rem; /* text-5xl for larger screens */
                 padding: 2.5rem; /* More padding on larger screens */
@@ -180,6 +202,7 @@
             .score-divider {
                 font-size: 4rem; /* Match score size */
                 margin: 0 1rem; /* Standard margin */
+                display: block; /* Ensure visible on desktop */
             }
         }
 
@@ -386,10 +409,10 @@
                 gameStatus.textContent = "Loading live game status...";
 
                 const today = new Date();
-                const year = today.getFullYear();
+                // Removed year variable and usage
                 const month = String(today.getMonth() + 1).padStart(2, '0');
                 const day = String(today.getDate()).padStart(2, '0');
-                const formattedDate = `${year}-${month}-${day}`;
+                const formattedDate = `${today.getFullYear()}-${month}-${day}`; // Keep year for API call only
 
                 const scheduleData = await fetchData('/schedule', {
                     date: formattedDate,
