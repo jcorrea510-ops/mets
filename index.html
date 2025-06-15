@@ -363,15 +363,15 @@
                 { date: "Wed, Jun 18", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
             ];
 
-            // Removed year from mock data
+            // Updated mock data to use "Day MM/DD" format directly
             const mockPastGames = [
-                { date: "Fri, Jun 13", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' }, // Example gamePk
-                { date: "Thu, Jun 12", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
-                { date: "Wed, Jun 11", opponent: "Washington Nationals", score: "5 - 0", result: "W", gamePk: '719002' },
-                { date: "Tue, Jun 10", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)", gamePk: '719003' },
-                { date: "Sun, Jun 8", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W", gamePk: '719004' },
-                { date: "Sat, Jun 7", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W", gamePk: '719005' },
-                { date: "Fri, Jun 6", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L", gamePk: '719006' },
+                { date: "Fri 6/13", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' },
+                { date: "Thu 6/12", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
+                { date: "Wed 6/11", opponent: "Washington Nationals", score: "5 - 0", result: "W", gamePk: '719002' },
+                { date: "Tue 6/10", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)", gamePk: '719003' },
+                { date: "Sun 6/8", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W", gamePk: '719004' },
+                { date: "Sat 6/7", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W", gamePk: '719005' },
+                { date: "Fri 6/6", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L", gamePk: '719006' },
             ];
 
 
@@ -616,12 +616,15 @@
                 // Sort all fetched past games by date descending (most recent first)
                 gamesFromApi.sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
                 allPastGames = gamesFromApi.length > 0 ? gamesFromApi : mockPastGames.sort((a, b) => {
-                    // Custom sort for mock data as it has string dates
-                    const dateAparts = a.date.split(', ')[1].split('/');
-                    const dateBparts = b.date.split(', ')[1].split('/');
-                    const dateA = new Date(today.getFullYear(), parseInt(dateAparts[0]) - 1, parseInt(dateAparts[1]));
-                    const dateB = new Date(today.getFullYear(), parseInt(dateBparts[0]) - 1, parseInt(dateBparts[1]));
-                    return dateB - dateA;
+                    // Custom sort for mock data as it has string dates in "Day MM/DD" format
+                    const todayYear = new Date().getFullYear();
+                    const parseDate = (dateStr) => {
+                        const [dayOfWeek, monthDay] = dateStr.split(' ');
+                        const [month, day] = monthDay.split('/').map(Number);
+                        // Using current year for mock data to make dates sortable
+                        return new Date(todayYear, month - 1, day);
+                    };
+                    return parseDate(b.date) - parseDate(a.date);
                 });
 
                 displayedPastGamesCount = 0; // Reset count
@@ -649,8 +652,10 @@
 
                         if (isApiData) {
                             const gameDateTime = new Date(game.gameDate);
-                            // Changed date format to MM/DD with weekday
-                            gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' });
+                            // New date format: "Day MM/DD" e.g., "Sat 6/15"
+                            const weekday = gameDateTime.toLocaleDateString('en-US', { weekday: 'short' });
+                            const monthDay = gameDateTime.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+                            gameDate = `${weekday} ${monthDay}`;
 
                             opponentName = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team.name : game.teams.home.team.name) || "Unknown Opponent";
 
@@ -658,7 +663,7 @@
                             opponentScore = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.score : game.teams.home.score);
                             result = (metsScore > opponentScore) ? 'W' : (metsScore < opponentScore ? 'L' : 'TBD');
                         } else { // Mock data
-                            gameDate = game.date; // Mock data already in "Day, Month DD"
+                            gameDate = game.date; // Mock data is already in "Day MM/DD" format
                             opponentName = game.opponent;
                             metsScore = (game.score && game.score.split(' - ')[0]) || '--';
                             opponentScore = (game.score && game.score.split(' - ')[1]) || '--';
