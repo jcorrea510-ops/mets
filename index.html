@@ -107,65 +107,62 @@
             display: flex;
             justify-content: space-between; /* Space between teams */
             align-items: center;
-            font-size: 2rem; /* Larger default for mobile, will be overridden */
             font-weight: 800; /* font-extrabold */
-            padding: 1.5rem; /* Adjusted padding for mobile, will be overridden */
+            padding: 1.5rem; /* Default padding */
             background: linear-gradient(135deg, #002D72 0%, #004d9c 100%); /* Gradient background */
             color: white;
             border-radius: 1rem;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 45, 114, 0.5); /* Enhanced shadow with blue glow */
             margin-bottom: 2rem;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
-            flex-wrap: nowrap; /* PREVENT WRAPPING */
+            flex-wrap: nowrap; /* Prevent wrapping of the two main team blocks */
         }
         .score-team {
-            flex-grow: 1; /* Allow teams to grow to fill space */
-            flex-shrink: 1; /* Allow teams to shrink */
-            flex-basis: 45%; /* A good starting point for width distribution */
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 48%; /* Each team takes almost half the width */
             text-align: center;
-            padding: 0 0.5rem; /* Padding for mobile team blocks */
-            min-width: 80px; /* Minimum width to prevent crushing too much */
+            padding: 0 0.2rem; /* Minimal horizontal padding */
+            min-width: 120px; /* Ensure a minimum width to avoid crushing */
         }
         .score-team span:first-child { /* Team Name */
-            font-size: 1.25rem; /* Default for mobile */
+            font-size: 1.25rem; /* Default mobile font size */
             font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Truncate long names */
+            white-space: normal; /* ALLOW WRAPPING for readability */
+            overflow: visible; /* Ensure text is not hidden */
+            text-overflow: clip; /* No ellipsis when wrapping */
             display: block; /* Ensures name and score stack cleanly within its own team block */
-            margin-bottom: 0.1rem; /* Tighten spacing between name and score */
+            line-height: 1.2; /* Better line height for wrapping text */
+            margin-bottom: 0.2rem; /* Add some space if name wraps */
         }
         .score-team span:last-child { /* Score */
-            font-size: 3rem; /* Default for mobile scores */
+            font-size: 3rem; /* Default mobile score font size */
             display: block;
             line-height: 1; /* Tighter line height for numbers */
         }
         .score-divider {
             display: block; /* Default to visible */
-            font-size: 3rem; /* Match score size */
+            font-size: 3rem;
             font-weight: 800;
-            margin: 0 0.5rem; /* Reduced margin */
-            color: #FF5910; /* Orange divider */
+            margin: 0 0.5rem;
+            color: #FF5910;
         }
 
         /* Mobile specific overrides for screens smaller than 640px */
         @media (max-width: 639px) {
             .score-card {
-                padding: 0.8rem; /* Even tighter padding */
-                justify-content: space-between; /* Ensure space between elements */
+                padding: 0.8rem;
             }
             .score-team span:first-child {
-                font-size: 1rem; /* Smaller team name */
+                font-size: 1rem; /* Slightly smaller team name for general mobile */
             }
             .score-team span:last-child {
-                font-size: 2.4rem; /* Smaller score */
+                font-size: 2.6rem; /* Slightly smaller score for general mobile */
             }
             .score-divider {
-                display: none; /* HIDE THE DASH ON MOBILE! */
+                display: none; /* HIDE THE DASH ON MOBILE */
             }
-            /* Adjust flex-basis for score teams when dash is hidden, to use full width */
             .score-team {
-                flex-basis: 48%; /* Try to get them to split evenly */
                 padding: 0 0.1rem; /* Even less padding */
             }
         }
@@ -176,7 +173,7 @@
                 font-size: 0.85rem; /* Even smaller team name */
             }
             .score-team span:last-child {
-                font-size: 2.1rem; /* Even smaller score */
+                font-size: 2.2rem; /* Even smaller score */
             }
             .score-team {
                  padding: 0 0; /* No horizontal padding on smallest screens */
@@ -187,7 +184,6 @@
             .score-card {
                 font-size: 2.5rem; /* text-5xl for larger screens */
                 padding: 2.5rem; /* More padding on larger screens */
-                flex-wrap: nowrap; /* No wrapping */
             }
             .score-team {
                 flex: none; /* Reset flex for larger screens */
@@ -409,7 +405,6 @@
                 gameStatus.textContent = "Loading live game status...";
 
                 const today = new Date();
-                // Removed year variable and usage
                 const month = String(today.getMonth() + 1).padStart(2, '0');
                 const day = String(today.getDate()).padStart(2, '0');
                 const formattedDate = `${today.getFullYear()}-${month}-${day}`; // Keep year for API call only
@@ -537,7 +532,6 @@
 
                 if (upcomingSeries.length > 0) {
                     const series = upcomingSeries[currentSeriesIndex];
-                    // Removed 'year' from toLocaleDateString options for startDateFormatted and endDateFormatted
                     const startDateFormatted = new Date(series.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     const endDateFormatted = new Date(series.lastGameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
@@ -550,7 +544,6 @@
 
                     series.games.forEach(game => {
                         const gameDateTime = new Date(game.gameDate);
-                        // Removed 'year' from toLocaleDateString options for gameDate
                         const gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                         const gameTime = gameDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                         const gameDiv = document.createElement('p');
@@ -613,16 +606,7 @@
 
                 // Sort all fetched past games by date descending (most recent first)
                 gamesFromApi.sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
-                // Updated mock data to remove year
-                allPastGames = gamesFromApi.length > 0 ? gamesFromApi : [
-                    { date: "Fri, Jun 13", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' },
-                    { date: "Thu, Jun 12", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
-                    { date: "Wed, Jun 11", opponent: "Washington Nationals", score: "5 - 0", result: "W", gamePk: '719002' },
-                    { date: "Tue, Jun 10", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)", gamePk: '719003' },
-                    { date: "Sun, Jun 8", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W", gamePk: '719004' },
-                    { date: "Sat, Jun 7", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W", gamePk: '719005' },
-                    { date: "Fri, Jun 6", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L", gamePk: '719006' },
-                ].sort((a, b) => new Date(b.date) - new Date(a.date)); // Fallback & sort mock
+                allPastGames = gamesFromApi.length > 0 ? gamesFromApi : mockPastGames.sort((a, b) => new Date(b.date) - new Date(a.date)); // Fallback & sort mock
 
                 displayedPastGamesCount = 0; // Reset count
                 renderPastGames(); // Initial render of first 5 games
@@ -649,7 +633,6 @@
 
                         if (isApiData) {
                             const gameDateTime = new Date(game.gameDate);
-                            // Removed 'year' from toLocaleDateString options for gameDate
                             gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
                             opponentName = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team.name : game.teams.home.team.name) || "Unknown Opponent";
