@@ -53,7 +53,7 @@
             transform: translateY(-5px); /* Lift effect on hover */
         }
         .table-container {
-            overflow-x: auto;
+            overflow-x: auto; /* Still allow scrolling if content unexpectedly wide */
             border-radius: 0.75rem; /* Rounded corners for table container */
             background-color: #1A1A2E; /* Match container background */
         }
@@ -64,12 +64,16 @@
             margin-top: 0; /* No margin as it's inside container */
             background-color: #1A1A2E; /* Match container background for inner table */
             border-radius: 0.75rem; /* Apply to table */
+            table-layout: fixed; /* Crucial for fixed column widths */
         }
         th, td {
             padding: 1rem; /* More padding in table cells */
             text-align: left;
             border-bottom: 1px solid #3A3A4A; /* Lighter, subtle border */
             color: #E0E0E0;
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Show ellipsis for overflowing text by default */
+            white-space: nowrap; /* Prevent wrapping by default */
         }
         th {
             background-color: #002D72; /* Mets Blue for table headers */
@@ -139,6 +143,24 @@
             color: #FF5910; /* Orange divider */
         }
 
+        /* Further adjustments for extremely small mobile screens (e.g., iPhone SE) */
+        @media (max-width: 380px) {
+            .score-card {
+                padding: 0.8rem; /* Even tighter padding */
+            }
+            .score-team span:first-child {
+                font-size: 1.1rem; /* Smaller team name */
+            }
+            .score-team span:last-child {
+                font-size: 2.6rem; /* Smaller score */
+            }
+            .score-divider {
+                font-size: 2.6rem; /* Match smaller score font */
+                margin: 0 0.25rem; /* Even tighter margin */
+            }
+        }
+
+
         @media (min-width: 640px) { /* sm breakpoint and up */
             .score-card {
                 font-size: 2.5rem; /* text-5xl for larger screens */
@@ -207,6 +229,30 @@
             text-align: center;
             margin-top: 1rem;
             line-height: 1.4;
+        }
+
+        /* Past Games Table Column Widths */
+        #past-games-table th:nth-child(1), #past-games-table td:nth-child(1) { /* Date */
+            width: 25%;
+        }
+        #past-games-table th:nth-child(2), #past-games-table td:nth-child(2) { /* Opponent */
+            width: 40%;
+            white-space: normal; /* Allow opponent name to wrap */
+            text-overflow: clip; /* No ellipsis needed if wrapping */
+        }
+        #past-games-table th:nth-child(3), #past-games-table td:nth-child(3) { /* Score */
+            width: 20%;
+        }
+        #past-games-table th:nth-child(4), #past-games-table td:nth-child(4) { /* Result */
+            width: 15%;
+        }
+
+        /* Reduce table padding for screens smaller than 640px */
+        @media (max-width: 639px) {
+            #past-games-table th, #past-games-table td {
+                padding: 0.6rem; /* Reduced padding */
+                font-size: 0.9rem; /* Slightly smaller font for table on small screens */
+            }
         }
     </style>
 </head>
@@ -284,19 +330,19 @@
 
             // Mock data for past and upcoming games are kept for robustness in schedule sections
             const mockUpcomingGames = [
-                { date: "Sun, Jun 15, 2025", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
-                { date: "Tue, Jun 17, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
-                { date: "Wed, Jun 18, 2025", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
+                { date: "Sun, Jun 15", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
+                { date: "Tue, Jun 17", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
+                { date: "Wed, Jun 18", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
             ];
 
             const mockPastGames = [
-                { date: "Fri, Jun 13, 2025", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' }, // Example gamePk
-                { date: "Thu, Jun 12, 2025", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
-                { date: "Wed, Jun 11, 2025", opponent: "Washington Nationals", score: "5 - 0", result: "W", gamePk: '719002' },
-                { date: "Tue, Jun 10, 2025", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)", gamePk: '719003' },
-                { date: "Sun, Jun 8, 2025", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W", gamePk: '719004' },
-                { date: "Sat, Jun 7, 2025", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W", gamePk: '719005' },
-                { date: "Fri, Jun 6, 2025", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L", gamePk: '719006' },
+                { date: "Fri, Jun 13", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' }, // Example gamePk
+                { date: "Thu, Jun 12", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
+                { date: "Wed, Jun 11", opponent: "Washington Nationals", score: "5 - 0", result: "W", gamePk: '719002' },
+                { date: "Tue, Jun 10", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)", gamePk: '719003' },
+                { date: "Sun, Jun 8", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W", gamePk: '719004' },
+                { date: "Sat, Jun 7", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W", gamePk: '719005' },
+                { date: "Fri, Jun 6", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L", gamePk: '719006' },
             ];
 
 
@@ -468,8 +514,9 @@
 
                 if (upcomingSeries.length > 0) {
                     const series = upcomingSeries[currentSeriesIndex];
+                    // Removed 'year' from toLocaleDateString options for startDateFormatted and endDateFormatted
                     const startDateFormatted = new Date(series.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    const endDateFormatted = new Date(series.lastGameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const endDateFormatted = new Date(series.lastGameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
                     let opponentName = series.opponent.name;
                     if (series.games[0] && series.games[0].teams.home.team.id !== METS_TEAM_ID) {
@@ -480,6 +527,7 @@
 
                     series.games.forEach(game => {
                         const gameDateTime = new Date(game.gameDate);
+                        // Removed 'year' from toLocaleDateString options for gameDate
                         const gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                         const gameTime = gameDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                         const gameDiv = document.createElement('p');
@@ -542,7 +590,16 @@
 
                 // Sort all fetched past games by date descending (most recent first)
                 gamesFromApi.sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
-                allPastGames = gamesFromApi.length > 0 ? gamesFromApi : mockPastGames.sort((a, b) => new Date(b.date) - new Date(a.date)); // Fallback & sort mock
+                // Updated mock data to remove year
+                allPastGames = gamesFromApi.length > 0 ? gamesFromApi : [
+                    { date: "Fri, Jun 13", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' },
+                    { date: "Thu, Jun 12", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
+                    { date: "Wed, Jun 11", opponent: "Washington Nationals", score: "5 - 0", result: "W", gamePk: '719002' },
+                    { date: "Tue, Jun 10", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)", gamePk: '719003' },
+                    { date: "Sun, Jun 8", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W", gamePk: '719004' },
+                    { date: "Sat, Jun 7", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W", gamePk: '719005' },
+                    { date: "Fri, Jun 6", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L", gamePk: '719006' },
+                ].sort((a, b) => new Date(b.date) - new Date(a.date)); // Fallback & sort mock
 
                 displayedPastGamesCount = 0; // Reset count
                 renderPastGames(); // Initial render of first 5 games
@@ -569,7 +626,8 @@
 
                         if (isApiData) {
                             const gameDateTime = new Date(game.gameDate);
-                            gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                            // Removed 'year' from toLocaleDateString options for gameDate
+                            gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
                             opponentName = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team.name : game.teams.home.team.name) || "Unknown Opponent";
 
@@ -593,7 +651,7 @@
                 } else if (displayedPastGamesCount === 0) { // Only show message if no games loaded initially
                     const row = tableBody.insertRow();
                     const cell = row.insertCell();
-                    cell.colSpan = 4; /* Changed from 5 to 4 as 'Details' column is removed */
+                    cell.colSpan = 4;
                     cell.textContent = `No past games found or data unavailable from MLB Stats API.`;
                     cell.className = "text-center py-4";
                 }
