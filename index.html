@@ -120,10 +120,10 @@
         .score-team {
             flex-grow: 1;
             flex-shrink: 1;
-            flex-basis: 48%; /* Each team takes almost half the width */
+            flex-basis: 45%; /* Each team takes almost half the width */
             text-align: center;
             padding: 0 0.2rem; /* Minimal horizontal padding */
-            min-width: 120px; /* Ensure a minimum width to avoid crushing */
+            min-width: 80px; /* Ensure a minimum width to avoid crushing */
         }
         .score-team span:first-child { /* Team Name */
             font-size: 1.25rem; /* Default mobile font size */
@@ -141,29 +141,34 @@
             line-height: 1; /* Tighter line height for numbers */
         }
         .score-divider {
-            display: block; /* Default to visible */
+            display: block; /* Ensure it's visible */
             font-size: 3rem;
             font-weight: 800;
             margin: 0 0.5rem;
             color: #FF5910;
+            flex-shrink: 0; /* Prevent dash from shrinking */
+            flex-basis: auto; /* Allow dash to take only necessary space */
         }
 
         /* Mobile specific overrides for screens smaller than 640px */
         @media (max-width: 639px) {
             .score-card {
-                padding: 0.8rem;
+                padding: 0.8rem 0.5rem; /* Reduced padding for overall card */
             }
             .score-team span:first-child {
                 font-size: 1rem; /* Slightly smaller team name for general mobile */
             }
             .score-team span:last-child {
-                font-size: 2.6rem; /* Slightly smaller score for general mobile */
+                font-size: 2.2rem; /* Slightly smaller score for general mobile */
             }
             .score-divider {
-                display: none; /* HIDE THE DASH ON MOBILE */
+                font-size: 2.2rem; /* Match smaller score font */
+                margin: 0 0.2rem; /* Very tight margin for the dash */
             }
             .score-team {
-                padding: 0 0.1rem; /* Even less padding */
+                padding: 0 0.1rem; /* Minimal padding around each team block */
+                flex-basis: calc(50% - 0.5rem); /* Distribute space more evenly, accounting for divider width */
+                min-width: 90px; /* Ensure a good minimum width */
             }
         }
 
@@ -173,10 +178,14 @@
                 font-size: 0.85rem; /* Even smaller team name */
             }
             .score-team span:last-child {
-                font-size: 2.2rem; /* Even smaller score */
+                font-size: 1.8rem; /* Even smaller score */
+            }
+            .score-divider {
+                font-size: 1.8rem; /* Match even smaller score font */
+                margin: 0 0.1rem; /* Ultra-tight margin */
             }
             .score-team {
-                 padding: 0 0; /* No horizontal padding on smallest screens */
+                 min-width: 80px; /* Further reduce min-width if necessary */
             }
         }
 
@@ -198,7 +207,6 @@
             .score-divider {
                 font-size: 4rem; /* Match score size */
                 margin: 0 1rem; /* Standard margin */
-                display: block; /* Ensure visible on desktop */
             }
         }
 
@@ -259,10 +267,10 @@
             white-space: normal; /* Allow opponent name to wrap */
             text-overflow: clip; /* No ellipsis needed if wrapping */
         }
-        #past-games-table th:nth-child(3), #past-games-table td:nth-child(3) { /* Score */
+        #past-games-table th:nth-child(3), #past-games-table td:nth-child(3) { /* S (Score) */
             width: 20%;
         }
-        #past-games-table th:nth-child(4), #past-games-table td:nth-child(4) { /* Result */
+        #past-games-table th:nth-child(4), #past-games-table td:nth-child(4) { /* R (Result) */
             width: 15%;
         }
 
@@ -321,8 +329,8 @@
                         <tr>
                             <th>Date</th>
                             <th>Opponent</th>
-                            <th>Score</th>
-                            <th>Result</th>
+                            <th>S</th> <!-- Changed from Score to S -->
+                            <th>R</th> <!-- Changed from Result to R -->
                         </tr>
                     </thead>
                     <tbody>
@@ -348,12 +356,14 @@
             const GAMES_PER_LOAD = 5;
 
             // Mock data for past and upcoming games are kept for robustness in schedule sections
+            // Removed year from mock data
             const mockUpcomingGames = [
                 { date: "Sun, Jun 15", time: "01:40 PM", opponent: "Tampa Bay Rays", location: "Citi Field, New York" },
                 { date: "Tue, Jun 17", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
                 { date: "Wed, Jun 18", time: "07:15 PM", opponent: "@ Atlanta Braves", location: "Truist Park, Atlanta" },
             ];
 
+            // Removed year from mock data
             const mockPastGames = [
                 { date: "Fri, Jun 13", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' }, // Example gamePk
                 { date: "Thu, Jun 12", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
@@ -493,19 +503,17 @@
                     let currentSeries = null;
                     allMetsGames.forEach(game => {
                         const opponent = game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team : game.teams.home.team;
-                        const location = (game.venue && game.venue.name) || "Unknown Venue";
+                        // Removed location variable and usage
                         const gameDate = new Date(game.gameDate);
 
                         // Define series break conditions:
                         // 1. New opponent
-                        // 2. Different location (home vs away series)
-                        // 3. More than 2 days gap between games in the same series
-                        if (!currentSeries || currentSeries.opponent.id !== opponent.id || currentSeries.location !== location ||
+                        // 2. More than 2 days gap between games in the same series (removed location check)
+                        if (!currentSeries || currentSeries.opponent.id !== opponent.id ||
                             (gameDate - currentSeries.lastGameDate) / (1000 * 60 * 60 * 24) > 2) {
 
                             currentSeries = {
                                 opponent: opponent,
-                                location: location,
                                 startDate: gameDate,
                                 lastGameDate: gameDate,
                                 games: [game]
@@ -540,7 +548,8 @@
                         opponentName = `@ ${opponentName}`;
                     }
 
-                    seriesInfoDiv.textContent = `${opponentName} at ${series.location} (${startDateFormatted} - ${endDateFormatted})`;
+                    // Removed location from seriesInfoDiv textContent
+                    seriesInfoDiv.textContent = `${opponentName} (${startDateFormatted} - ${endDateFormatted})`;
 
                     series.games.forEach(game => {
                         const gameDateTime = new Date(game.gameDate);
@@ -578,7 +587,7 @@
             // Function to populate past games tables using MLB Stats API
             async function populatePastGames() {
                 const today = new Date();
-                const year = today.getFullYear();
+                const year = today.getFullYear(); // Keep year for API call to fetch correct season data
 
                 // Fetch games for a longer period initially to allow "load more"
                 const pastDate = new Date();
@@ -606,7 +615,14 @@
 
                 // Sort all fetched past games by date descending (most recent first)
                 gamesFromApi.sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
-                allPastGames = gamesFromApi.length > 0 ? gamesFromApi : mockPastGames.sort((a, b) => new Date(b.date) - new Date(a.date)); // Fallback & sort mock
+                allPastGames = gamesFromApi.length > 0 ? gamesFromApi : mockPastGames.sort((a, b) => {
+                    // Custom sort for mock data as it has string dates
+                    const dateAparts = a.date.split(', ')[1].split('/');
+                    const dateBparts = b.date.split(', ')[1].split('/');
+                    const dateA = new Date(today.getFullYear(), parseInt(dateAparts[0]) - 1, parseInt(dateAparts[1]));
+                    const dateB = new Date(today.getFullYear(), parseInt(dateBparts[0]) - 1, parseInt(dateBparts[1]));
+                    return dateB - dateA;
+                });
 
                 displayedPastGamesCount = 0; // Reset count
                 renderPastGames(); // Initial render of first 5 games
@@ -633,7 +649,8 @@
 
                         if (isApiData) {
                             const gameDateTime = new Date(game.gameDate);
-                            gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                            // Changed date format to MM/DD with weekday
+                            gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' });
 
                             opponentName = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team.name : game.teams.home.team.name) || "Unknown Opponent";
 
@@ -641,7 +658,7 @@
                             opponentScore = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.score : game.teams.home.score);
                             result = (metsScore > opponentScore) ? 'W' : (metsScore < opponentScore ? 'L' : 'TBD');
                         } else { // Mock data
-                            gameDate = game.date;
+                            gameDate = game.date; // Mock data already in "Day, Month DD"
                             opponentName = game.opponent;
                             metsScore = (game.score && game.score.split(' - ')[0]) || '--';
                             opponentScore = (game.score && game.score.split(' - ')[1]) || '--';
