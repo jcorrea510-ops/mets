@@ -7,111 +7,206 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0c0c0c; /* Dark background */
-            color: #e0e0e0; /* Light text color */
+            background-color: #100F1C; /* Deep dark background */
+            color: #E0E0E0; /* Light gray text */
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 1.5rem 0; /* Add vertical padding for overall content */
         }
         .container {
             max-width: 1200px;
+            width: 100%;
             margin: auto;
             padding: 1.5rem;
+            background-color: #1A1A2E; /* Slightly lighter dark blue/purple tint */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* Softer, deeper shadow */
+            box-sizing: border-box; /* Include padding in width calculation */
         }
         .section-title {
             color: #FF5910; /* Mets Orange */
-            font-size: 1.875rem; /* text-3xl */
-            font-weight: 700; /* font-bold */
+            font-size: 2.25rem; /* text-4xl, slightly larger */
+            font-weight: 800; /* font-extrabold */
             margin-bottom: 1.5rem;
             text-align: center;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #FF5910;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #002D72; /* Thicker Mets Blue border */
+            text-shadow: 0 0 10px rgba(255, 89, 16, 0.3); /* Subtle orange glow */
         }
         .card {
-            background-color: #1a1a1a; /* Darker card background */
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            background-color: #252440; /* Even lighter, more vibrant dark tint for cards */
+            border-radius: 1rem; /* Consistent rounded corners */
+            padding: 2rem; /* More padding inside cards */
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Card specific shadow */
+            border: 1px solid rgba(70, 70, 90, 0.3); /* Subtle border for depth */
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
         }
         .table-container {
             overflow-x: auto;
+            border-radius: 0.75rem; /* Rounded corners for table container */
+            background-color: #1A1A2E; /* Match container background */
         }
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
+            border-collapse: separate; /* Use separate to allow border-radius on cells */
+            border-spacing: 0; /* Remove space between cells */
+            margin-top: 0; /* No margin as it's inside container */
+            background-color: #1A1A2E; /* Match container background for inner table */
+            border-radius: 0.75rem; /* Apply to table */
         }
         th, td {
-            padding: 0.75rem;
+            padding: 1rem; /* More padding in table cells */
             text-align: left;
-            border-bottom: 1px solid #333; /* Darker border */
+            border-bottom: 1px solid #3A3A4A; /* Lighter, subtle border */
+            color: #E0E0E0;
         }
         th {
             background-color: #002D72; /* Mets Blue for table headers */
             color: white;
-            font-weight: 600; /* font-semibold */
+            font-weight: 700; /* font-bold */
+            position: sticky; /* Make headers sticky for scrolling tables */
+            top: 0;
+            z-index: 10;
+        }
+        /* Top-left rounded corner for first th */
+        th:first-child {
+            border-top-left-radius: 0.75rem;
+        }
+        /* Top-right rounded corner for last th */
+        th:last-child {
+            border-top-right-radius: 0.75rem;
+        }
+        tr:last-child td {
+            border-bottom: none; /* No border on last row */
+        }
+        tr:nth-child(even) {
+            background-color: #202038; /* Slightly different shade for even rows */
         }
         tr:hover {
-            background-color: #2a2a2a; /* Slightly lighter on hover */
+            background-color: #353450; /* More distinct hover for rows */
+            cursor: pointer; /* Indicate clickable rows */
         }
+
+        /* Responsive adjustments for score card (Enhanced Mobile Look) */
         .score-card {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            font-size: 2.25rem; /* text-4xl */
+            font-size: 2rem; /* Larger default for mobile */
             font-weight: 800; /* font-extrabold */
-            padding: 2rem;
-            background-color: #002D72; /* Solid Mets Blue */ 
+            padding: 1.5rem; /* Adjusted padding for mobile */
+            background: linear-gradient(135deg, #002D72 0%, #004d9c 100%); /* Gradient background */
             color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 45, 114, 0.5); /* Enhanced shadow with blue glow */
             margin-bottom: 2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
+            flex-wrap: wrap; /* Allow wrapping on very small screens */
         }
         .score-team {
+            flex: 1 1 45%; /* Allow teams to take up almost half space */
             text-align: center;
+            padding: 0.5rem; /* Padding for mobile team blocks */
+        }
+        .score-team span:first-child { /* Team Name */
+            font-size: 1.25rem; /* text-xl for mobile */
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Truncate long names */
+        }
+        .score-team span:last-child { /* Score */
+            font-size: 3rem; /* text-5xl for mobile scores */
+            display: block;
+            margin-top: 0.25rem;
+            line-height: 1; /* Tighter line height for numbers */
         }
         .score-divider {
-            margin: 0 1rem;
+            font-size: 3rem; /* Match score size */
+            font-weight: 800;
+            margin: 0 0.5rem; /* Keep tight on mobile */
+            color: #FF5910; /* Orange divider */
         }
+
+        @media (min-width: 640px) { /* sm breakpoint and up */
+            .score-card {
+                font-size: 2.5rem; /* text-5xl for larger screens */
+                padding: 2.5rem; /* More padding on larger screens */
+                flex-wrap: nowrap; /* No wrapping */
+            }
+            .score-team {
+                flex: none; /* Reset flex for larger screens */
+                padding: 0;
+            }
+            .score-team span:first-child {
+                font-size: 1.5rem; /* text-2xl */
+            }
+            .score-team span:last-child {
+                font-size: 4rem; /* text-6xl */
+            }
+            .score-divider {
+                font-size: 4rem; /* Match score size */
+                margin: 0 1rem; /* Standard margin */
+            }
+        }
+
         .game-status {
-            font-size: 1.25rem; /* text-xl */
+            font-size: 1.25rem; /* text-xl for mobile */
             font-weight: 600;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             text-align: center;
-            color: #e0e0e0;
+            color: #C0C0C0; /* Slightly muted gray for status */
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .game-status {
+                font-size: 1.5rem; /* text-2xl for medium and up */
+            }
         }
         .series-navigation button, .load-more-btn {
-            background-color: #002D72;
+            background: linear-gradient(90deg, #002D72 0%, #004d9c 100%); /* Gradient button */
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem; /* More padding */
+            border-radius: 0.75rem; /* More rounded */
             font-weight: bold;
-            transition: background-color 0.2s ease;
+            transition: all 0.3s ease; /* Smooth transition for all properties */
             cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         .series-navigation button:hover:not(:disabled), .load-more-btn:hover:not(:disabled) {
-            background-color: #FF5910;
+            background: linear-gradient(90deg, #FF5910 0%, #E64E0F 100%); /* Orange gradient on hover */
+            transform: translateY(-2px); /* Slight lift */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 89, 16, 0.4); /* Enhanced glow */
         }
         .series-navigation button:disabled, .load-more-btn:disabled {
             background-color: #333;
             cursor: not-allowed;
             opacity: 0.6;
+            box-shadow: none;
         }
         .mets-highlight {
             background-color: #004d9c !important; /* Slightly lighter Mets blue for highlighting, using !important for override */
             font-weight: bold;
             color: white;
         }
-        .top-teams-table th, .top-teams-table td {
+        .note-text {
+            font-size: 0.875rem; /* text-sm */
+            color: #999999; /* Muted gray */
             text-align: center;
-        }
-        .ai-generated-note {
-            font-size: 0.875rem;
-            color: #aaaaaa;
-            text-align: center;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
+            margin-top: 1rem;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -174,34 +269,6 @@
                 <button id="load-more-past-games" class="load-more-btn">Load 5 More Games</button>
             </div>
         </section>
-
-        <!-- Standings Section -->
-        <section class="card">
-            <h2 class="section-title">MLB Standings (AI-Generated Simulation for Current Season)</h2>
-            <p class="ai-generated-note">Note: This data is a simulated example generated by AI based on recent search for current MLB standings and is not real-time API data from MLB.</p>
-
-            <h3 class="text-xl font-semibold text-white mb-4 text-center">Top 5 Teams by Win Percentage (AI-Generated Simulation)</h3>
-            <div class="table-container mb-8">
-                <table id="top-5-teams-table" class="top-teams-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Team</th>
-                            <th>W</th>
-                            <th>L</th>
-                            <th>PCT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Top 5 teams will be populated here by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Dynamic Standings Sections will be generated here -->
-            <div id="dynamic-standings-sections"></div>
-
-        </section>
     </div>
 
     <script>
@@ -223,13 +290,13 @@
             ];
 
             const mockPastGames = [
-                { date: "Fri, Jun 13, 2025", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L" },
-                { date: "Thu, Jun 12, 2025", opponent: "Washington Nationals", score: "4 - 3", result: "W" },
-                { date: "Wed, Jun 11, 2025", opponent: "Washington Nationals", score: "5 - 0", result: "W" },
-                { date: "Tue, Jun 10, 2025", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)" },
-                { date: "Sun, Jun 8, 2025", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W" },
-                { date: "Sat, Jun 7, 2025", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W" },
-                { date: "Fri, Jun 6, 2025", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L" },
+                { date: "Fri, Jun 13, 2025", opponent: "Tampa Bay Rays", score: "5 - 7", result: "L", gamePk: '719000' }, // Example gamePk
+                { date: "Thu, Jun 12, 2025", opponent: "Washington Nationals", score: "4 - 3", result: "W", gamePk: '719001' },
+                { date: "Wed, Jun 11, 2025", opponent: "Washington Nationals", score: "5 - 0", result: "W", gamePk: '719002' },
+                { date: "Tue, Jun 10, 2025", opponent: "Washington Nationals", score: "5 - 4", result: "W (10 innings)", gamePk: '719003' },
+                { date: "Sun, Jun 8, 2025", opponent: "@ Colorado Rockies", score: "13 - 5", result: "W", gamePk: '719004' },
+                { date: "Sat, Jun 7, 2025", opponent: "@ Colorado Rockies", score: "2 - 1", result: "W", gamePk: '719005' },
+                { date: "Fri, Jun 6, 2025", opponent: "@ Colorado Rockies", score: "4 - 6", result: "L", gamePk: '719006' },
             ];
 
 
@@ -237,28 +304,28 @@
             async function fetchData(path, params = {}) {
                 const queryString = new URLSearchParams(params).toString();
                 const url = `https://${MLB_STATS_API_HOST}/api/v1${path}?${queryString}`;
-                console.log(`Fetching from MLB Stats API: ${url}`); 
+                console.log(`Fetching from MLB Stats API: ${url}`);
                 try {
                     const response = await fetch(url);
                     if (!response.ok) {
                         const errorText = await response.text();
                         console.error(`HTTP error! status: ${response.status}, message: ${errorText} for URL: ${url}`);
-                        return null; 
+                        return null;
                     }
                     const data = await response.json();
-                    console.log(`MLB Stats API response for ${path}:`, data); 
+                    console.log(`MLB Stats API response for ${path}:`, data);
                     // Check for common indicators of no data
-                    if ((data.totalItems !== undefined && data.totalItems === 0) || 
-                        (data.records && data.records.length === 0) || 
+                    if ((data.totalItems !== undefined && data.totalItems === 0) ||
+                        (data.records && data.records.length === 0) ||
                         (data.dates && data.dates.length === 0) ||
                         (Object.keys(data).length === 0 && data.constructor === Object)) {
                         console.warn(`MLB Stats API returned empty data for ${path} with params:`, params);
-                        return []; 
+                        return [];
                     }
                     return data;
                 } catch (error) {
                     console.error(`Error fetching data from MLB Stats API ${path}:`, error);
-                    return null; 
+                    return null;
                 }
             }
 
@@ -269,7 +336,7 @@
                 const homeTeamScore = document.getElementById('home-team-score');
                 const awayTeamScore = document.getElementById('away-team-score');
                 const gameStatus = document.getElementById('game-status');
-                
+
                 gameStatus.textContent = "Loading live game status...";
 
                 const today = new Date();
@@ -285,9 +352,9 @@
 
                 if (scheduleData && scheduleData.dates && scheduleData.dates.length > 0) {
                     const gamesToday = scheduleData.dates[0].games;
-                    const metsGame = gamesToday.find(game => 
+                    const metsGame = gamesToday.find(game =>
                         (game.teams.home.team.id === METS_TEAM_ID || game.teams.away.team.id === METS_TEAM_ID) &&
-                        (game.status.codedGameState === "I" || game.status.codedGameState === "P" || game.status.codedGameState === "D") 
+                        (game.status.codedGameState === "I" || game.status.codedGameState === "P" || game.status.codedGameState === "D")
                     );
 
                     if (metsGame) {
@@ -295,7 +362,7 @@
                         awayTeamName.textContent = metsGame.teams.away.team.name || "Unknown";
                         homeTeamScore.textContent = metsGame.teams.home.score !== undefined ? metsGame.teams.home.score : "--";
                         awayTeamScore.textContent = metsGame.teams.away.score !== undefined ? metsGame.teams.away.score : "--";
-                        
+
                         let currentStatus = metsGame.status.detailedState;
 
                         if (metsGame.status.codedGameState === "I") {
@@ -309,7 +376,7 @@
                             const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                             currentStatus = `Scheduled: ${gameTime}`;
                         } else if (metsGame.status.codedGameState === "F" || metsGame.status.codedGameState === "O") {
-                            currentStatus = "Final"; 
+                            currentStatus = "Final";
                         }
 
                         gameStatus.textContent = currentStatus;
@@ -329,7 +396,7 @@
                     awayTeamScore.textContent = "--";
                 }
             }
-            
+
             // Function to populate upcoming series
             async function populateUpcomingSeries() {
                 const today = new Date();
@@ -350,8 +417,8 @@
 
                 upcomingSeries = []; // Clear previous series
                 if (scheduleData && scheduleData.dates) {
-                    const allMetsGames = scheduleData.dates.flatMap(dateEntry => 
-                        dateEntry.games.filter(game => 
+                    const allMetsGames = scheduleData.dates.flatMap(dateEntry =>
+                        dateEntry.games.filter(game =>
                             (game.teams.home.team.id === METS_TEAM_ID || game.teams.away.team.id === METS_TEAM_ID) &&
                             (game.status.codedGameState === "S" || game.status.codedGameState === "P" || game.status.codedGameState === "D") // Scheduled, Pre-Game, Delayed
                         )
@@ -369,9 +436,9 @@
                         // 1. New opponent
                         // 2. Different location (home vs away series)
                         // 3. More than 2 days gap between games in the same series
-                        if (!currentSeries || currentSeries.opponent.id !== opponent.id || currentSeries.location !== location || 
+                        if (!currentSeries || currentSeries.opponent.id !== opponent.id || currentSeries.location !== location ||
                             (gameDate - currentSeries.lastGameDate) / (1000 * 60 * 60 * 24) > 2) {
-                            
+
                             currentSeries = {
                                 opponent: opponent,
                                 location: location,
@@ -403,7 +470,7 @@
                     const series = upcomingSeries[currentSeriesIndex];
                     const startDateFormatted = new Date(series.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     const endDateFormatted = new Date(series.lastGameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                    
+
                     let opponentName = series.opponent.name;
                     if (series.games[0] && series.games[0].teams.home.team.id !== METS_TEAM_ID) {
                         opponentName = `@ ${opponentName}`;
@@ -444,12 +511,11 @@
                 }
             });
 
-
             // Function to populate past games tables using MLB Stats API
             async function populatePastGames() {
                 const today = new Date();
                 const year = today.getFullYear();
-                
+
                 // Fetch games for a longer period initially to allow "load more"
                 const pastDate = new Date();
                 pastDate.setDate(today.getDate() - 90); // Look back 90 days
@@ -459,15 +525,15 @@
 
                 const scheduleData = await fetchData('/schedule', {
                     startDate: formattedPastDate,
-                    endDate: formattedToday, 
+                    endDate: formattedToday,
                     teamId: METS_TEAM_ID,
                     sportId: 1, // MLB
                 });
 
                 let gamesFromApi = [];
                 if (scheduleData && scheduleData.dates) {
-                    gamesFromApi = scheduleData.dates.flatMap(dateEntry => 
-                        dateEntry.games.filter(game => 
+                    gamesFromApi = scheduleData.dates.flatMap(dateEntry =>
+                        dateEntry.games.filter(game =>
                             (game.teams.home.team.id === METS_TEAM_ID || game.teams.away.team.id === METS_TEAM_ID) &&
                             (game.status.codedGameState === "F" || game.status.codedGameState === "O") // F: Final, O: Completed (Official)
                         )
@@ -485,10 +551,10 @@
             function renderPastGames() {
                 const tableBody = document.querySelector(`#past-games-table tbody`);
                 const loadMoreBtn = document.getElementById('load-more-past-games');
-                
+
                 // Clear only if this is the initial render, otherwise append
                 if (displayedPastGamesCount === 0) {
-                    tableBody.innerHTML = ''; 
+                    tableBody.innerHTML = '';
                 }
 
                 const gamesToRender = allPastGames.slice(displayedPastGamesCount, displayedPastGamesCount + GAMES_PER_LOAD);
@@ -496,8 +562,8 @@
                 if (gamesToRender.length > 0) {
                     gamesToRender.forEach(game => {
                         const row = tableBody.insertRow();
-                        
-                        const isApiData = game.gamePk !== undefined; 
+
+                        const isApiData = game.gamePk !== undefined;
 
                         let gameDate, opponentName, metsScore, opponentScore, result;
 
@@ -506,7 +572,7 @@
                             gameDate = gameDateTime.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
 
                             opponentName = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.team.name : game.teams.home.team.name) || "Unknown Opponent";
-                            
+
                             metsScore = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.home.score : game.teams.away.score);
                             opponentScore = (game.teams.home.team.id === METS_TEAM_ID ? game.teams.away.score : game.teams.home.score);
                             result = (metsScore > opponentScore) ? 'W' : (metsScore < opponentScore ? 'L' : 'TBD');
@@ -527,7 +593,7 @@
                 } else if (displayedPastGamesCount === 0) { // Only show message if no games loaded initially
                     const row = tableBody.insertRow();
                     const cell = row.insertCell();
-                    cell.colSpan = 4;
+                    cell.colSpan = 4; /* Changed from 5 to 4 as 'Details' column is removed */
                     cell.textContent = `No past games found or data unavailable from MLB Stats API.`;
                     cell.className = "text-center py-4";
                 }
@@ -538,200 +604,10 @@
 
             document.getElementById('load-more-past-games').addEventListener('click', renderPastGames);
 
-
-            // Function to populate standings tables with AI-generated data based on recent search
-            async function populateStandings() {
-                // This data is a simulated example generated by AI based on recent search of MLB standings
-                // It is static and does not update in real-time from an external API.
-                // The AI has searched for "current MLB standings 2025" and generated plausible data.
-                const aiGeneratedStandings = {
-                    "NL East": [
-                        { team: { name: "New York Mets" }, wins: 45, losses: 25, winningPercentage: .643, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "7-3" },
-                        { team: { name: "Philadelphia Phillies" }, wins: 40, losses: 29, winningPercentage: .580, gamesBack: "4.5", streak: { streakCode: "W2" }, lastTenGames: "4-6" },
-                        { team: { name: "Atlanta Braves" }, wins: 30, losses: 38, winningPercentage: .441, gamesBack: "14.0", streak: { streakCode: "W2" }, lastTenGames: "3-7" },
-                        { team: { name: "Washington Nationals" }, wins: 30, losses: 39, winningPercentage: .435, gamesBack: "14.5", streak: { streakCode: "L6" }, lastTenGames: "2-8" },
-                        { team: { name: "Miami Marlins" }, wins: 26, losses: 41, winningPercentage: .388, gamesBack: "17.5", streak: { streakCode: "W1" }, lastTenGames: "3-7" },
-                    ],
-                    "NL Central": [
-                        { team: { name: "Chicago Cubs" }, wins: 42, losses: 28, winningPercentage: .600, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "4-6" },
-                        { team: { name: "Milwaukee Brewers" }, wins: 38, losses: 33, winningPercentage: .535, gamesBack: "4.5", streak: { streakCode: "W2" }, lastTenGames: "5-5" },
-                        { team: { name: "St. Louis Cardinals" }, wins: 36, losses: 34, winningPercentage: .514, gamesBack: "6.0", streak: { streakCode: "L6" }, lastTenGames: "3-7" },
-                        { team: { name: "Cincinnati Reds" }, wins: 35, losses: 35, winningPercentage: .500, gamesBack: "7.0", streak: { streakCode: "L2" }, lastTenGames: "6-4" },
-                        { team: { name: "Pittsburgh Pirates" }, wins: 29, losses: 42, winningPercentage: .408, gamesBack: "13.5", streak: { streakCode: "W1" }, lastTenGames: "7-3" },
-                    ],
-                    "NL West": [
-                        { team: { name: "Los Angeles Dodgers" }, wins: 41, losses: 29, winningPercentage: .586, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "5-5" },
-                        { team: { name: "San Francisco Giants" }, wins: 41, losses: 29, winningPercentage: .586, gamesBack: "-", streak: { streakCode: "W1" }, lastTenGames: "8-2" },
-                        { team: { name: "San Diego Padres" }, wins: 38, losses: 30, winningPercentage: .559, gamesBack: "2.0", streak: { streakCode: "L2" }, lastTenGames: "4-6" },
-                        { team: { name: "Arizona Diamondbacks" }, wins: 35, losses: 34, winningPercentage: .507, gamesBack: "5.5", streak: { streakCode: "W4" }, lastTenGames: "7-3" },
-                        { team: { name: "Colorado Rockies" }, wins: 13, losses: 56, winningPercentage: .188, gamesBack: "27.5", streak: { streakCode: "L1" }, lastTenGames: "4-6" },
-                    ],
-                    "AL East": [
-                        { team: { name: "New York Yankees" }, wins: 42, losses: 26, winningPercentage: .618, gamesBack: "-", streak: { streakCode: "L1" }, lastTenGames: "6-4" },
-                        { team: { name: "Toronto Blue Jays" }, wins: 38, losses: 31, winningPercentage: .551, gamesBack: "4.5", streak: { streakCode: "L1" }, lastTenGames: "7-3" },
-                        { team: { name: "Tampa Bay Rays" }, wins: 37, losses: 32, winningPercentage: .536, gamesBack: "5.5", streak: { streakCode: "W1" }, lastTenGames: "7-3" },
-                        { team: { name: "Boston Red Sox" }, wins: 35, losses: 36, winningPercentage: .493, gamesBack: "8.5", streak: { streakCode: "W3" }, lastTenGames: "6-4" },
-                        { team: { name: "Baltimore Orioles" }, wins: 28, losses: 40, winningPercentage: .412, gamesBack: "14.0", streak: { streakCode: "W1" }, lastTenGames: "6-4" },
-                    ],
-                    "AL Central": [
-                        { team: { name: "Detroit Tigers" }, wins: 46, losses: 25, winningPercentage: .648, gamesBack: "-", streak: { streakCode: "W2" }, lastTenGames: "6-4" },
-                        { team: { name: "Minnesota Twins" }, wins: 36, losses: 33, winningPercentage: .522, gamesBack: "9.0", streak: { streakCode: "L2" }, lastTenGames: "4-6" },
-                        { team: { name: "Cleveland Guardians" }, wins: 35, losses: 33, winningPercentage: .515, gamesBack: "9.5", streak: { streakCode: "L1" }, lastTenGames: "3-7" },
-                        { team: { name: "Kansas City Royals" }, wins: 34, losses: 36, winningPercentage: .486, gamesBack: "11.5", streak: { streakCode: "L4" }, lastTenGames: "3-7" },
-                        { team: { name: "Chicago White Sox" }, wins: 23, losses: 47, winningPercentage: .329, gamesBack: "22.5", streak: { streakCode: "L3" }, lastTenGames: "5-5" },
-                    ],
-                    "AL West": [
-                        { team: { name: "Houston Astros" }, wins: 39, losses: 30, winningPercentage: .565, gamesBack: "-", streak: { streakCode: "W3" }, lastTenGames: "7-3" },
-                        { team: { name: "Seattle Mariners" }, wins: 34, losses: 34, winningPercentage: .500, gamesBack: "4.5", streak: { streakCode: "W1" }, lastTenGames: "2-8" },
-                        { team: { name: "Texas Rangers" }, wins: 34, losses: 36, winningPercentage: .486, gamesBack: "5.5", streak: { streakCode: "W2" }, lastTenGames: "5-5" },
-                        { team: { name: "Los Angeles Angels" }, wins: 33, losses: 35, winningPercentage: .485, gamesBack: "5.5", streak: { streakCode: "L1" }, lastTenGames: "7-3" },
-                        { team: { name: "Oakland Athletics" }, wins: 27, losses: 44, winningPercentage: .380, gamesBack: "13.0", streak: { streakCode: "W1" }, lastTenGames: "4-6" },
-                    ]
-                };
-
-
-                const dynamicStandingsSections = document.getElementById('dynamic-standings-sections');
-                dynamicStandingsSections.innerHTML = ''; // Clear previous dynamic sections
-
-                let allTeams = []; // To collect all teams for top 5
-
-                // Helper to create and populate a single standings table with AI-generated data
-                const createAndPopulateStandingsTable = (standingsDataForDivision, divisionName) => {
-                    let dataToDisplay = standingsDataForDivision;
-
-                    // Add teams from this division to allTeams for overall top 5 calculation
-                    dataToDisplay.forEach(teamRecord => {
-                        allTeams.push({
-                            team: { name: teamRecord.team.name },
-                            wins: teamRecord.wins,
-                            losses: teamRecord.losses,
-                            winningPercentage: teamRecord.winningPercentage
-                        });
-                    });
-
-                    // Custom sort: Mets first, then by winning percentage, then alphabetically
-                    dataToDisplay.sort((a, b) => {
-                        const teamA = a.team.name;
-                        const teamB = b.team.name;
-
-                        if (teamA === "New York Mets" && teamB !== "New York Mets") return -1;
-                        if (teamB === "New York Mets" && teamA !== "New York Mets") return 1;
-
-                        const pctA = parseFloat(a.winningPercentage || 0);
-                        const pctB = parseFloat(b.winningPercentage || 0);
-
-                        if (pctA !== pctB) {
-                            return pctB - pctA; // Sort by PCT descending
-                        }
-                        return teamA.localeCompare(teamB); // Alphabetical if PCT is same
-                    });
-
-
-                    // Create elements for this division
-                    const divisionHeader = document.createElement('h3');
-                    divisionHeader.className = "text-xl font-semibold text-white mb-4 text-center mt-8";
-                    divisionHeader.textContent = divisionName;
-                    dynamicStandingsSections.appendChild(divisionHeader);
-
-                    const tableContainer = document.createElement('div');
-                    tableContainer.className = "table-container mb-8";
-                    dynamicStandingsSections.appendChild(tableContainer);
-
-                    const table = document.createElement('table');
-                    table.innerHTML = `
-                        <thead>
-                            <tr>
-                                <th>Team</th>
-                                <th>W</th>
-                                <th>L</th>
-                                <th>PCT</th>
-                                <th>GB</th>
-                                <th>STRK</th>
-                                <th>L10</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    `;
-                    tableContainer.appendChild(table);
-                    const tableBody = table.querySelector('tbody');
-
-                    dataToDisplay.forEach(teamRecord => {
-                        const row = tableBody.insertRow();
-                        // Safely access properties from AI-generated data
-                        const teamName = teamRecord.team.name;
-                        const wins = teamRecord.wins;
-                        const losses = teamRecord.losses;
-                        const pct = parseFloat(teamRecord.winningPercentage).toFixed(3);
-                        const gb = teamRecord.gamesBack;
-                        const streak = teamRecord.streak.streakCode; 
-                        const lastTen = teamRecord.lastTenGames; 
-
-                        row.insertCell().textContent = teamName;
-                        row.insertCell().textContent = wins;
-                        row.insertCell().textContent = losses;
-                        row.insertCell().textContent = pct;
-                        row.insertCell().textContent = gb; 
-                        row.insertCell().textContent = streak;
-                        row.insertCell().textContent = lastTen;
-
-                        if (teamName === "New York Mets") {
-                            row.classList.add('mets-highlight');
-                        }
-                    });
-                };
-                
-                // --- National League Divisions ---
-                createAndPopulateStandingsTable(aiGeneratedStandings["NL East"], "NL East Standings");
-                createAndPopulateStandingsTable(aiGeneratedStandings["NL Central"], "NL Central Standings");
-                createAndPopulateStandingsTable(aiGeneratedStandings["NL West"], "NL West Standings");
-
-
-                // --- American League Divisions ---
-                createAndPopulateStandingsTable(aiGeneratedStandings["AL East"], "AL East Standings");
-                createAndPopulateStandingsTable(aiGeneratedStandings["AL Central"], "AL Central Standings");
-                createAndPopulateStandingsTable(aiGeneratedStandings["AL West"], "AL West Standings");
-
-                // Populate Top 5 Teams
-                const top5TeamsTableBody = document.getElementById('top-5-teams-table').querySelector('tbody');
-                top5TeamsTableBody.innerHTML = ''; // Clear existing rows
-
-                // Filter out teams with no valid winning percentage and sort for top 5
-                const teamsWithValidPct = allTeams.filter(team => 
-                    team.winningPercentage !== undefined && 
-                    team.winningPercentage !== null && 
-                    !isNaN(parseFloat(team.winningPercentage))
-                );
-
-                teamsWithValidPct.sort((a, b) => {
-                    return (parseFloat(b.winningPercentage) || 0) - (parseFloat(a.winningPercentage) || 0);
-                });
-
-                const top5Teams = teamsWithValidPct.slice(0, 5);
-
-                if (top5Teams.length > 0) {
-                    top5Teams.forEach((team, index) => {
-                        const row = top5TeamsTableBody.insertRow();
-                        row.insertCell().textContent = index + 1;
-                        row.insertCell().textContent = team.team.name;
-                        row.insertCell().textContent = team.wins;
-                        row.insertCell().textContent = team.losses;
-                        row.insertCell().textContent = parseFloat(team.winningPercentage).toFixed(3);
-                    });
-                } else {
-                    const row = top5TeamsTableBody.insertRow();
-                    const cell = row.insertCell();
-                    cell.colSpan = 5;
-                    cell.textContent = `No top teams data available from AI-generated simulation.`;
-                    cell.className = "text-center py-4";
-                }
-            }
-
-
             async function initializeApp() {
                 await updateCurrentScore();
-                await populateUpcomingSeries(); 
-                populateStandings(); // Now populating standings from AI-generated data
-                await populatePastGames(); 
+                await populateUpcomingSeries();
+                await populatePastGames();
             }
 
             initializeApp();
