@@ -6,8 +6,8 @@
     <title>New York Mets Fan Hub</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/New_York_Mets_logo.svg/1200px-New_York_Mets_logo.svg.png">
-    <meta name="theme-color" content="#002D72"> <!-- Mets Blue for theme color -->
+    <link rel="apple-touch-icon" href="https://i.ebayimg.com/00/s/NzUwWDc1MA==/z/53QAAOSwOHpbY3Y9/$_57.JPG?set_id=8800005007">
+    <meta name="theme-color" content="#100F1C"> <!-- Matching background color for theme -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
@@ -504,7 +504,6 @@
             document.getElementById('load-more-past-games').addEventListener('click', renderPastGames);
 
             async function initializeApp() {
-                // updateCurrentScore() is no longer called here
                 await populateUpcomingSeries();
                 await populatePastGames();
             }
