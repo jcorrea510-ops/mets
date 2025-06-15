@@ -6,6 +6,8 @@
     <title>New York Mets Fan Hub</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/New_York_Mets_logo.svg/1200px-New_York_Mets_logo.svg.png">
+    <meta name="theme-color" content="#002D72"> <!-- Mets Blue for theme color -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
@@ -102,130 +104,17 @@
             cursor: pointer; /* Indicate clickable rows */
         }
 
-        /* Responsive adjustments for score card */
-        .score-card {
-            display: flex;
-            justify-content: space-between; /* Space between teams */
-            align-items: center;
-            font-weight: 800; /* font-extrabold */
-            padding: 1.5rem; /* Default padding */
-            background: linear-gradient(135deg, #002D72 0%, #004d9c 100%); /* Gradient background */
-            color: white;
-            border-radius: 1rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 45, 114, 0.5); /* Enhanced shadow with blue glow */
-            margin-bottom: 2rem;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
-            flex-wrap: nowrap; /* Prevent wrapping of the two main team blocks */
-        }
-        .score-team {
-            flex-grow: 1;
-            flex-shrink: 1;
-            flex-basis: 45%; /* Each team takes almost half the width */
-            text-align: center;
-            padding: 0 0.2rem; /* Minimal horizontal padding */
-            min-width: 80px; /* Ensure a minimum width to avoid crushing */
-        }
-        .score-team span:first-child { /* Team Name */
-            font-size: 1.25rem; /* Default mobile font size */
-            font-weight: 700;
-            white-space: normal; /* ALLOW WRAPPING for readability */
-            overflow: visible; /* Ensure text is not hidden */
-            text-overflow: clip; /* No ellipsis when wrapping */
-            display: block; /* Ensures name and score stack cleanly within its own team block */
-            line-height: 1.2; /* Better line height for wrapping text */
-            margin-bottom: 0.2rem; /* Add some space if name wraps */
-        }
-        .score-team span:last-child { /* Score */
-            font-size: 3rem; /* Default mobile score font size */
-            display: block;
-            line-height: 1; /* Tighter line height for numbers */
-        }
-        .score-divider {
-            display: block; /* Ensure it's visible */
-            font-size: 3rem;
-            font-weight: 800;
-            margin: 0 0.5rem;
-            color: #FF5910;
-            flex-shrink: 0; /* Prevent dash from shrinking */
-            flex-basis: auto; /* Allow dash to take only necessary space */
-        }
-
-        /* Mobile specific overrides for screens smaller than 640px */
-        @media (max-width: 639px) {
-            .score-card {
-                padding: 0.8rem 0.5rem; /* Reduced padding for overall card */
-            }
-            .score-team span:first-child {
-                font-size: 1rem; /* Slightly smaller team name for general mobile */
-            }
-            .score-team span:last-child {
-                font-size: 2.2rem; /* Slightly smaller score for general mobile */
-            }
-            .score-divider {
-                font-size: 2.2rem; /* Match smaller score font */
-                margin: 0 0.2rem; /* Very tight margin for the dash */
-            }
-            .score-team {
-                padding: 0 0.1rem; /* Minimal padding around each team block */
-                flex-basis: calc(50% - 0.5rem); /* Distribute space more evenly, accounting for divider width */
-                min-width: 90px; /* Ensure a good minimum width */
-            }
-            /* Adjust game status font for mobile */
-            .game-status {
-                font-size: 1rem; /* Smaller font for game status on small mobile */
-                margin-top: 1rem; /* Reduce top margin */
-            }
-        }
-
-        /* Further adjustments for extremely small mobile screens (e.g., iPhone SE/smaller iPhones) */
-        @media (max-width: 380px) {
-            .score-team span:first-child {
-                font-size: 0.85rem; /* Even smaller team name */
-            }
-            .score-team span:last-child {
-                font-size: 1.8rem; /* Even smaller score */
-            }
-            .score-divider {
-                font-size: 1.8rem; /* Match even smaller score font */
-                margin: 0 0.1rem; /* Ultra-tight margin */
-            }
-            .score-team {
-                 min-width: 80px; /* Further reduce min-width if necessary */
-            }
-        }
-
-        @media (min-width: 640px) { /* sm breakpoint and up - Desktop styles */
-            .score-card {
-                font-size: 2.5rem; /* text-5xl for larger screens */
-                padding: 2.5rem; /* More padding on larger screens */
-            }
-            .score-team {
-                flex: none; /* Reset flex for larger screens */
-                padding: 0;
-            }
-            .score-team span:first-child {
-                font-size: 1.5rem; /* text-2xl */
-            }
-            .score-team span:last-child {
-                font-size: 4rem; /* text-6xl */
-            }
-            .score-divider {
-                font-size: 4rem; /* Match score size */
-                margin: 0 1rem; /* Standard margin */
-            }
-        }
-
-        .game-status {
-            font-size: 1.25rem; /* text-xl for mobile */
+        .game-status { /* This class is now unused but kept in style for safety */
+            font-size: 1.25rem;
             font-weight: 600;
             margin-top: 1.5rem;
             text-align: center;
-            color: #C0C0C0; /* Slightly muted gray for status */
+            color: #C0C0C0;
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
-        @media (min-width: 768px) { /* md breakpoint */
+        @media (min-width: 768px) {
             .game-status {
-                font-size: 1.5rem; /* text-2xl for medium and up */
+                font-size: 1.5rem;
             }
         }
         .series-navigation button, .load-more-btn {
@@ -290,24 +179,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Current Score Section -->
-        <section class="card">
-            <h2 class="section-title">Current Game Score</h2>
-            <div id="current-score" class="score-card">
-                <div class="score-team">
-                    <span id="home-team-name">New York Mets</span>
-                    <br>
-                    <span id="home-team-score">--</span>
-                </div>
-                <div class="score-divider">-</div>
-                <div class="score-team">
-                    <span id="away-team-name">Opponent</span>
-                    <br>
-                    <span id="away-team-score">--</span>
-                </div>
-            </div>
-            <p id="game-status" class="game-status">Loading live game status...</p>
-        </section>
+        <!-- The "Current Game Status" section has been entirely removed as requested. -->
 
         <!-- Upcoming Series Section -->
         <section class="card">
@@ -409,72 +281,7 @@
                 }
             }
 
-            // Function to update current game score using MLB Stats API
-            async function updateCurrentScore() {
-                const homeTeamName = document.getElementById('home-team-name');
-                const awayTeamName = document.getElementById('away-team-name');
-                const homeTeamScore = document.getElementById('home-team-score');
-                const awayTeamScore = document.getElementById('away-team-score');
-                const gameStatus = document.getElementById('game-status');
-
-                gameStatus.textContent = "Loading live game status...";
-
-                const today = new Date();
-                const month = String(today.getMonth() + 1).padStart(2, '0');
-                const day = String(today.getDate()).padStart(2, '0');
-                const formattedDate = `${today.getFullYear()}-${month}-${day}`; // Keep year for API call only
-
-                const scheduleData = await fetchData('/schedule', {
-                    date: formattedDate,
-                    sportId: 1, // MLB
-                });
-
-                if (scheduleData && scheduleData.dates && scheduleData.dates.length > 0) {
-                    const gamesToday = scheduleData.dates[0].games;
-                    const metsGame = gamesToday.find(game =>
-                        (game.teams.home.team.id === METS_TEAM_ID || game.teams.away.team.id === METS_TEAM_ID) &&
-                        (game.status.codedGameState === "I" || game.status.codedGameState === "P" || game.status.codedGameState === "D")
-                    );
-
-                    if (metsGame) {
-                        homeTeamName.textContent = metsGame.teams.home.team.name || "Unknown";
-                        awayTeamName.textContent = metsGame.teams.away.team.name || "Unknown";
-                        homeTeamScore.textContent = metsGame.teams.home.score !== undefined ? metsGame.teams.home.score : "--";
-                        awayTeamScore.textContent = metsGame.teams.away.score !== undefined ? metsGame.teams.away.score : "--";
-
-                        let currentStatus = metsGame.status.detailedState;
-
-                        if (metsGame.status.codedGameState === "I") {
-                            // Display inning and half, e.g., "Inning: Top 3rd"
-                            if (metsGame.inningInfo?.currentInning && metsGame.inningInfo?.inningHalf) {
-                                currentStatus = `Inning: ${metsGame.inningInfo.inningHalf} ${metsGame.inningInfo.currentInning}`;
-                            } else {
-                                currentStatus = "Game In Progress"; // Fallback if inning number isn't there
-                            }
-                        } else if (metsGame.status.codedGameState === "P" || metsGame.status.codedGameState === "S") {
-                            const gameTime = new Date(metsGame.gameDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-                            currentStatus = `Scheduled: ${gameTime}`;
-                        } else if (metsGame.status.codedGameState === "F" || metsGame.status.codedGameState === "O") {
-                            currentStatus = "Final";
-                        }
-
-                        gameStatus.textContent = currentStatus;
-
-                    } else {
-                        gameStatus.textContent = "No live Mets game currently.";
-                        homeTeamName.textContent = "New York Mets";
-                        awayTeamName.textContent = "Opponent";
-                        homeTeamScore.textContent = "--";
-                        awayTeamScore.textContent = "--";
-                    }
-                } else {
-                    gameStatus.textContent = "No games scheduled for today or data unavailable from MLB Stats API.";
-                    homeTeamName.textContent = "New York Mets";
-                    awayTeamName.textContent = "Opponent";
-                    homeTeamScore.textContent = "--";
-                    awayTeamScore.textContent = "--";
-                }
-            }
+            // The function updateCurrentScore is no longer needed or called since the section is removed.
 
             // Function to populate upcoming series
             async function populateUpcomingSeries() {
@@ -697,15 +504,14 @@
             document.getElementById('load-more-past-games').addEventListener('click', renderPastGames);
 
             async function initializeApp() {
-                await updateCurrentScore();
+                // updateCurrentScore() is no longer called here
                 await populateUpcomingSeries();
                 await populatePastGames();
             }
 
             initializeApp();
 
-            // The app updates every 5 minutes.
-            setInterval(initializeApp, 5 * 60 * 1000);
+            // The setInterval for updateCurrentScore() is also removed.
         });
     </script>
 </body>
