@@ -445,9 +445,9 @@
                         let currentStatus = metsGame.status.detailedState;
 
                         if (metsGame.status.codedGameState === "I") {
-                            // Display inning without ordinal suffix, if available
-                            if (metsGame.inningInfo?.currentInning) {
-                                currentStatus = `Inning: ${metsGame.inningInfo.inningHalf || ''} ${metsGame.inningInfo.currentInning}`;
+                            // Display inning and half, e.g., "Inning: Top 3rd"
+                            if (metsGame.inningInfo?.currentInning && metsGame.inningInfo?.inningHalf) {
+                                currentStatus = `Inning: ${metsGame.inningInfo.inningHalf} ${metsGame.inningInfo.currentInning}`;
                             } else {
                                 currentStatus = "Game In Progress"; // Fallback if inning number isn't there
                             }
